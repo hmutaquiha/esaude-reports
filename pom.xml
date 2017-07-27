@@ -18,9 +18,10 @@
 	<url>https://wiki.openmrs.org/x/FQ4z</url>
 
 	<scm>
-		<connection>scm:git:git@github.com:openmrs/openmrs-module-esaudereports.git</connection>
-		<developerConnection>scm:git:git@github.com:openmrs/openmrs-module-esaudereports.git</developerConnection>
-		<url>https://github.com/openmrs/openmrs-module-esaudereports/</url>
+		<connection>scm:git:https://github.com/esaude/esaude-reports.git</connection>
+		<developerConnection>scm:git:https://github.com/esaude/esaude-reports.git</developerConnection>
+		<url>https://github.com/esaude/esaude-reports/</url>
+		<tag>HEAD</tag>
 	</scm>
 
 	<modules>
