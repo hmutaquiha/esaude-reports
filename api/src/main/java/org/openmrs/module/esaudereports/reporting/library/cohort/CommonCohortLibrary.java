@@ -11,7 +11,6 @@ import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.GenderCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.ProgramEnrollmentCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.common.SetComparator;
 import org.openmrs.module.reporting.common.TimeQualifier;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -147,13 +146,9 @@ public class CommonCohortLibrary {
 		}
 		return cd;
 	}
-	
-	public CohortDefinition allPatients() {
-		SqlCohortDefinition cd = new SqlCohortDefinition();
-		cd.setName("all patients");
-		cd.addParameter(new Parameter("onOrAfter", "After Date", Date.class));
-		cd.addParameter(new Parameter("onOrBefore", "Before Date", Date.class));
-		cd.setQuery("SELECT patient_id FROM patient");
-		return cd;
-	}
+
+	/**
+	 * Pregnant women
+	 * @return CohortDefinition
+	 */
 }

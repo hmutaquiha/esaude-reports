@@ -33,21 +33,6 @@ public class CommonDimension {
 	}
 	
 	/**
-	 * Dimension of age using the 3 standard age groups
-	 * 
-	 * @return the dimension
-	 */
-	public CohortDefinitionDimension standardAgeGroups() {
-		CohortDefinitionDimension dim = new CohortDefinitionDimension();
-		dim.setName("age groups (<1, <15, 15+)");
-		dim.addParameter(new Parameter("onDate", "Date", Date.class));
-		dim.addCohortDefinition("<1", map(commonLibrary.agedAtMost(0), "effectiveDate=${onDate}"));
-		dim.addCohortDefinition("<15", map(commonLibrary.agedAtMost(14), "effectiveDate=${onDate}"));
-		dim.addCohortDefinition("15+", map(commonLibrary.agedAtLeast(15), "effectiveDate=${onDate}"));
-		return dim;
-	}
-	
-	/**
 	 * Dimensions of age for children and adults for quality improvement report
 	 * 
 	 * @return CohortDefinitionDimension
