@@ -112,6 +112,9 @@ public class SetupQualityImprovementReport extends EsaudeDataExportManager {
 		String indParams = "startDate=${startDate},endDate=${endDate},location=${location},revisionEndDate=${revisionEndDate},testStart=${testStart}";
 		//add dimensions to the dsd
 		dsd.addDimension("age", ReportUtils.map(commonDimension.dimForQualityImprovement(), "onDate=${endDate}"));
+		dsd.addDimension("pregnant",
+		    ReportUtils.map(commonDimension.pregnant(), "onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}"));
+		dsd.addDimension("gender", ReportUtils.map(commonDimension.gender()));
 		
 		//bulid the column parameters here
 		ColumnParameters children = new ColumnParameters("0-14", "0-14", "age=0-14");

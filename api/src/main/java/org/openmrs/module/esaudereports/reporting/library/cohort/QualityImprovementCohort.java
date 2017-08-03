@@ -42,24 +42,24 @@ public class QualityImprovementCohort {
 	private CommonCohortLibrary cohortLibrary;
 	
 	//encounter types
-	EncounterType ADULTO_INICIAL_A = CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_INICIAL_A);
+	EncounterType ADULTO_INICIAL_A = CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_INICIAL_A_5);
 	
-	EncounterType ADULTO_SEGUIMENTO = CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_SEGUIMENTO);
+	EncounterType ADULTO_SEGUIMENTO = CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_SEGUIMENTO_6);
 	
-	EncounterType PEDIATRIA_INICIAL_A = CoreUtils.getEncounterType(Metadata._EncounterType.PEDIATRIA_INICIAL_A);
+	EncounterType PEDIATRIA_INICIAL_A = CoreUtils.getEncounterType(Metadata._EncounterType.PEDIATRIA_INICIAL_A_7);
 	
-	EncounterType PEDIATRIA_SEGUIMENTO = CoreUtils.getEncounterType(Metadata._EncounterType.PEDIATRIA_SEGUIMENTO);
+	EncounterType PEDIATRIA_SEGUIMENTO = CoreUtils.getEncounterType(Metadata._EncounterType.PEDIATRIA_SEGUIMENTO_9);
 	
-	EncounterType FARMACIA = CoreUtils.getEncounterType(Metadata._EncounterType.FARMACIA);
+	EncounterType FARMACIA = CoreUtils.getEncounterType(Metadata._EncounterType.FARMACIA_18);
 	
 	//concepts
-	Concept arvPlan = Dictionary.getConcept(Metadata._Concept.ANTIRETROVIRAL_PLAN);
+	Concept arvPlan = Dictionary.getConcept(Metadata._Concept.ANTIRETROVIRAL_PLAN_1255);
 	
-	Concept arvDrugUsed = Dictionary.getConcept(Metadata._Concept.PREVIOUS_ANTIRETROVIRAL_DRUGS_USED_FOR_TREATMENT);
+	Concept arvDrugUsed = Dictionary.getConcept(Metadata._Concept.PREVIOUS_ANTIRETROVIRAL_DRUGS_USED_FOR_TREATMENT_1087);
 	
-	Concept pregnant = Dictionary.getConcept(Metadata._Concept.PREGNANT);
+	Concept pregnant = Dictionary.getConcept(Metadata._Concept.PREGNANT_1982);
 	
-	Concept gestation = Dictionary.getConcept(Metadata._Concept.GESTATION);
+	Concept gestation = Dictionary.getConcept(Metadata._Concept.GESTATION_44);
 	
 	/**
 	 * Patients based on encounters and programs
@@ -75,7 +75,7 @@ public class QualityImprovementCohort {
 		cd.addSearch("encounter5and7", ReportUtils.map(cohortLibrary.hasEncounter(ADULTO_INICIAL_A, PEDIATRIA_INICIAL_A),
 		    "onOrAfter=${onOrAfter},onOrBefore=${onOrBefore},location=${location}"));
 		cd.addSearch("inProgram", ReportUtils.map(
-		    cohortLibrary.enrolled(CoreUtils.getProgram(Metadata._Program.SERVICO_TARV_CUIDADO)),
+		    cohortLibrary.enrolled(CoreUtils.getProgram(Metadata._Program.SERVICO_TARV_CUIDADO_1)),
 		    "enrolledOnOrAfter=${onOrAfter},enrolledOnOrBefore=${onOrBefore}"));
 		cd.addSearch("encounter6and9", ReportUtils.map(cohortLibrary.hasEncounter(ADULTO_SEGUIMENTO, PEDIATRIA_SEGUIMENTO),
 		    "onOrAfter=${onOrAfter},onOrBefore=${onOrBefore},location=${location}"));
@@ -129,7 +129,7 @@ public class QualityImprovementCohort {
 		DateObsValueBetweenCohortDefinition dcd = new DateObsValueBetweenCohortDefinition();
 		dcd.addParameter(new Parameter("onOrAfter", "Start date", Date.class));
 		dcd.addParameter(new Parameter("onOrBefore", "End date", Date.class));
-		dcd.setQuestion(Dictionary.getConcept(Metadata._Concept.HISTORICAL_DRUG_START_DATE));
+		dcd.setQuestion(Dictionary.getConcept(Metadata._Concept.HISTORICAL_DRUG_START_DATE_1190));
 		dcd.setTimeModifier(PatientSetService.TimeModifier.ANY);
 		
 		cd.addSearch("encounter186and9", ReportUtils.map(
@@ -148,12 +148,13 @@ public class QualityImprovementCohort {
 		cd.addSearch("encounter18", ReportUtils.map(cohortLibrary.hasEncounter(FARMACIA),
 		    "onOrAfter=${onOrAfter},onOrBefore=${onOrBefore},location=${location}"));
 		cd.addSearch("inProgram2", ReportUtils.map(
-		    cohortLibrary.enrolled(CoreUtils.getProgram(Metadata._Program.SERVICO_TARV_TRATAMENTO)),
+		    cohortLibrary.enrolled(CoreUtils.getProgram(Metadata._Program.SERVICO_TARV_TRATAMENTO_2)),
 		    "enrolledOnOrAfter=${onOrAfter},enrolledOnOrBefore=${onOrBefore}"));
 		cd.addSearch("inProgram1", ReportUtils.map(
-		    cohortLibrary.enrolled(CoreUtils.getProgram(Metadata._Program.SERVICO_TARV_CUIDADO)),
+		    cohortLibrary.enrolled(CoreUtils.getProgram(Metadata._Program.SERVICO_TARV_CUIDADO_1)),
 		    "enrolledOnOrAfter=${onOrAfter},enrolledOnOrBefore=${onOrBefore}"));
-		cd.addSearch("inProgram8", ReportUtils.map(cohortLibrary.enrolled(CoreUtils.getProgram(Metadata._Program.PTV_ETV)),
+		cd.addSearch("inProgram8", ReportUtils.map(
+		    cohortLibrary.enrolled(CoreUtils.getProgram(Metadata._Program.PTV_ETV_8)),
 		    "enrolledOnOrAfter=${onOrAfter},enrolledOnOrBefore=${onOrBefore}"));
 		cd.setCompositionString("encounter18 OR inProgram2 OR inProgram1 OR inProgram8");
 		return cd;
