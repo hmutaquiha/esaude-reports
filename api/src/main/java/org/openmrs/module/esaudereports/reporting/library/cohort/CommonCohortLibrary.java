@@ -2,6 +2,7 @@ package org.openmrs.module.esaudereports.reporting.library.cohort;
 
 import org.openmrs.Concept;
 import org.openmrs.EncounterType;
+import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
@@ -23,7 +24,7 @@ import java.util.Date;
  * Created by Nicholas Ingosi on 6/20/17. Library of common cohort definitions
  */
 @Component
-public class CohortLibrary {
+public class CommonCohortLibrary {
 	
 	/**
 	 * Patients who are female
@@ -101,6 +102,7 @@ public class CohortLibrary {
 		cd.setTimeQualifier(TimeQualifier.ANY);
 		cd.addParameter(new Parameter("onOrBefore", "Before Date", Date.class));
 		cd.addParameter(new Parameter("onOrAfter", "After Date", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
 		if (types.length > 0) {
 			cd.setEncounterTypeList(Arrays.asList(types));
 		}

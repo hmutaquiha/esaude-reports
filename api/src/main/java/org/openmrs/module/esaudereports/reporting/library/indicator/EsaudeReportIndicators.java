@@ -13,7 +13,7 @@
  */
 package org.openmrs.module.esaudereports.reporting.library.indicator;
 
-import org.openmrs.module.esaudereports.reporting.library.cohort.CohortLibrary;
+import org.openmrs.module.esaudereports.reporting.library.cohort.CommonCohortLibrary;
 import org.openmrs.module.reporting.indicator.CohortIndicator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,7 @@ import static org.openmrs.module.esaudereports.reporting.utils.ReportUtils.map;
 public class EsaudeReportIndicators {
 	
 	@Autowired
-	private CohortLibrary cohortLibrary;
+	private CommonCohortLibrary cohortLibrary;
 	
 	/**
 	 * All patients in the database

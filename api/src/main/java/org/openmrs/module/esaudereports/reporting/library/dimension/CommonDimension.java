@@ -1,6 +1,6 @@
 package org.openmrs.module.esaudereports.reporting.library.dimension;
 
-import org.openmrs.module.esaudereports.reporting.library.cohort.CohortLibrary;
+import org.openmrs.module.esaudereports.reporting.library.cohort.CommonCohortLibrary;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.indicator.dimension.CohortDefinitionDimension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import static org.openmrs.module.esaudereports.reporting.utils.ReportUtils.map;
 public class CommonDimension {
 	
 	@Autowired
-	private CohortLibrary commonLibrary;
+	private CommonCohortLibrary commonLibrary;
 	
 	/**
 	 * Gender dimension
