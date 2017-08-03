@@ -1,11 +1,11 @@
-package org.openmrs.module.esaudereports.reporting.library.queries;
+package org.openmrs.module.esaudereports.reporting.library.queries.quality.improvement;
 
 /**
  * Classe contém as queries das cohorts de relatórios
  * 
  * @author Hamilton Mutaquiha
  */
-public interface CohortQueries {
+public class Category2CohortQueries {
 	
 	/**
 	 * MQ_INICIO TARV NO PERIODO DE INCLUSAO (AMOSTRA TARV)

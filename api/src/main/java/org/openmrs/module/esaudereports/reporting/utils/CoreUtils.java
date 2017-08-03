@@ -120,13 +120,14 @@ public class CoreUtils {
 		return Context.getEncounterService().getEncounterTypeByUuid(identifier);
 		
 	}
-
+	
 	/**
 	 * Get the program given an identifier
-	 * @param  identifier the uuid of the program
+	 * 
+	 * @param identifier the uuid of the program
 	 * @return the {@link org.openmrs.Program}
 	 */
-	public static Program getProgram(String identifier){
+	public static Program getProgram(String identifier) {
 		return Context.getProgramWorkflowService().getProgramByUuid(identifier);
 	}
 }
