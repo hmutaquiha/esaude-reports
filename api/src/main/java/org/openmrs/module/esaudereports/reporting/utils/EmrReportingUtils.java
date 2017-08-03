@@ -1,5 +1,6 @@
 package org.openmrs.module.esaudereports.reporting.utils;
 
+import org.openmrs.Location;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -26,6 +27,7 @@ public class EmrReportingUtils {
 		ind.addParameter(new Parameter("startDate", "Start Date", Date.class));
 		ind.addParameter(new Parameter("endDate", "End Date", Date.class));
 		ind.addParameter(new Parameter("revisionEndDate", "Revision End Date", Date.class));
+		ind.addParameter(new Parameter("location", "Location", Location.class));
 		ind.setCohortDefinition(cohort);
 		return ind;
 	}
