@@ -14,12 +14,14 @@
 package org.openmrs.module.esaudereports.reporting.library.cohort;
 
 import org.openmrs.Location;
+import org.openmrs.module.esaudereports.reporting.library.queries.Category2CohortQueries;
 import org.openmrs.module.esaudereports.reporting.library.queries.CohortQueries;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
+import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -66,6 +68,24 @@ public class QualityImprovementCohort {
         cd.addParameter(new Parameter("location", "US", Location.class));
         cd.setQuery(CohortQueries.SUBSCRIBED_INCLUSION_PERIOD_PRE_ART_SAMPLE);
 
+        return cd;
+    }
+
+    public CohortDefinition followUpClinicalConsulationsNumerator() {
+        SqlCohortDefinition cd = new SqlCohortDefinition();
+
+        return cd;
+    }
+
+    public CohortDefinition followUpClinicalConsulationsDenominator() {
+        SqlCohortDefinition cd = new SqlCohortDefinition();
+        cd.setName("INICIO TARV NO PERIODO DE INCLUSAO (AMOSTRA TARV)");
+        cd.setDescription("São pacientes que iniciaram TARV dentro do periodo de inclusao");
+        cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+        cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+        cd.addParameter(new Parameter("revisionEndDate", "Data Final de Revisão", Date.class));
+        cd.addParameter(new Parameter("location", "US", Location.class));
+        cd.setQuery(CohortQueries.ART_START_INCLUSION_PERIOD_ART_SAMPLE);
         return cd;
     }
 
@@ -130,7 +150,7 @@ public class QualityImprovementCohort {
         cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
         cd.addParameter(new Parameter("revisionEndDate", "Data Final de Revisão", Date.class));
         cd.addParameter(new Parameter("location", "US", Location.class));
-        cd.setQuery(CohortQueries.SUBSCRIBED_INCLUSION_PERIOD_PRE_ART_SAMPLE);
+        cd.setQuery(Category2CohortQueries.SUBSCRIBED_INCLUSION_PERIOD_PRE_ART_SAMPLE);
 
         return cd;
     }
@@ -142,7 +162,7 @@ public class QualityImprovementCohort {
         cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
         cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
         cd.addParameter(new Parameter("location", "US", Location.class));
-        cd.setQuery(CohortQueries.PATIENTS_WITH_CLINIC_CONSULTATION_ON_SUBSCRIPTION_DATE);
+        cd.setQuery(Category2CohortQueries.PATIENTS_WITH_CLINIC_CONSULTATION_ON_SUBSCRIPTION_DATE);
 
         return cd;
     }

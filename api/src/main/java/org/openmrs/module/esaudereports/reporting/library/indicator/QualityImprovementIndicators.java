@@ -38,7 +38,7 @@ public class QualityImprovementIndicators {
 	 */
 	public CohortIndicator clinicalConsulationsNumerator() {
 		return cohortIndicator(
-		    "Clinical consultations numerator",
+		    "Initial clinical consultations numerator",
 		    map(cohort.clinicalConsulationsNumerator(),
 		        "startDate=${startDate},endDate=${endDate},location=${location},revisionEndDate=${revisionEndDate}"));
 	}
@@ -50,8 +50,32 @@ public class QualityImprovementIndicators {
 	 */
 	public CohortIndicator clinicalConsulationsDenominator() {
 		return cohortIndicator(
-		    "Clinical consultations denominator",
+		    "Initial clinical consultations denominator",
 		    map(cohort.clinicalConsulationsDenominator(),
 		        "startDate=${startDate},endDate=${endDate},location=${location},revisionEndDate=${revisionEndDate}"));
+	}
+
+	/**
+	 * Clinical consultation numerator
+	 *
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator followUpClinicalConsulationsNumerator() {
+		return cohortIndicator(
+				"Follow up clinical consultations numerator",
+				map(cohort.followUpClinicalConsulationsNumerator(),
+						"startDate=${startDate},endDate=${endDate},location=${location},revisionEndDate=${revisionEndDate}"));
+	}
+
+	/**
+	 * Clinical consultation numerator
+	 *
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator followUpCConsulationsDenominator() {
+		return cohortIndicator(
+				"Follow up consultations denominator",
+				map(cohort.followUpClinicalConsulationsDenominator(),
+						"startDate=${startDate},endDate=${endDate},location=${location},revisionEndDate=${revisionEndDate}"));
 	}
 }
