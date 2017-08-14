@@ -15,6 +15,7 @@ package org.openmrs.module.esaudereports.reporting.utils;
 
 import org.openmrs.EncounterType;
 import org.openmrs.GlobalProperty;
+import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -118,5 +119,15 @@ public class CoreUtils {
 	public static EncounterType getEncounterType(String identifier) {
 		return Context.getEncounterService().getEncounterTypeByUuid(identifier);
 		
+	}
+	
+	/**
+	 * Get the program given an identifier
+	 * 
+	 * @param identifier the uuid of the program
+	 * @return the {@link org.openmrs.Program}
+	 */
+	public static Program getProgram(String identifier) {
+		return Context.getProgramWorkflowService().getProgramByUuid(identifier);
 	}
 }
