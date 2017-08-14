@@ -369,8 +369,8 @@ public class QualityImprovementCohort {
 		List<EncounterType> encounterTypes = new ArrayList<EncounterType>();
 		
 		encounterTypes.add(encounterDAO.getEncounterTypeByUuid(Metadata._EncounterType.TUBERCULOSE_LIVRO));
-		encounterTypes.add(encounterDAO.getEncounterTypeByUuid(Metadata._EncounterType.STARV_ADULTO_SEGUIMENTO));
-		encounterTypes.add(encounterDAO.getEncounterTypeByUuid(Metadata._EncounterType.STARV_PEDIATRIA_SEGUIMENTO));
+		encounterTypes.add(encounterDAO.getEncounterTypeByUuid(Metadata._EncounterType.ADULTO_SEGUIMENTO_6));
+		encounterTypes.add(encounterDAO.getEncounterTypeByUuid(Metadata._EncounterType.PEDIATRIA_SEGUIMENTO_9));
 		encounterTypes.add(encounterDAO.getEncounterTypeByUuid(Metadata._EncounterType.TUBERCULOSE_RASTREIO));
 		encounterTypes.add(encounterDAO.getEncounterTypeByUuid(Metadata._EncounterType.TUBERCULOSE_PROCESSO));
 		
