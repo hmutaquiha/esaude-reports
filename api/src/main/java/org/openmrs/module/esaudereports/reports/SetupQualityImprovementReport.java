@@ -127,6 +127,49 @@ public class SetupQualityImprovementReport extends EsaudeDataExportManager {
 		    allColumns, Arrays.asList("01", "02", "03"));
 		EmrReportingUtils.addRow(dsd, "2D", "", ReportUtils.map(indicators.clinicalConsulationsDenominator(), indParams),
 		    allColumns, Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "3N1", "",
+		    ReportUtils.map(indicators.followUpClinicalConsulationsNumerator1(), indParams), allColumns,
+		    Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "3N2", "",
+		    ReportUtils.map(indicators.followUpClinicalConsulationsNumerator2(), indParams), allColumns,
+		    Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "3N3", "",
+		    ReportUtils.map(indicators.followUpClinicalConsulationsNumerator3(), indParams), allColumns,
+		    Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "3D", "", ReportUtils.map(indicators.followUpCConsulationsDenominator(), indParams),
+		    allColumns, Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "4N1", "", ReportUtils.map(indicators.clinicalProcessFillNumerator1(), indParams),
+		    allColumns, Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "4N2", "", ReportUtils.map(indicators.clinicalProcessFillNumerator2(), indParams),
+		    allColumns, Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "4D1", "", ReportUtils.map(indicators.clinicalProcessFillDenominator(), indParams),
+		    allColumns, Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "4D2", "", ReportUtils.map(indicators.clinicalConsulationsDenominator(), indParams),
+		    allColumns, Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "7N1", "", ReportUtils.map(indicators.tbTrackingNumerator1(), indParams), allColumns,
+		    Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "7N2", "", ReportUtils.map(indicators.tbTrackingNumerator1(), indParams), allColumns,
+		    Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "7N3", "", ReportUtils.map(indicators.tbTrackingNumerator3(), indParams), allColumns,
+		    Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "7D1", "", ReportUtils.map(indicators.tbTrackingDenominator1(), indParams),
+		    allColumns, Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "7D2", "", ReportUtils.map(indicators.tbTrackingDenominator1(), indParams),
+		    allColumns, Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "7D3", "", ReportUtils.map(indicators.tbTrackingDenominator3(), indParams),
+		    allColumns, Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "8N1", "", ReportUtils.map(indicators.iTSTrackingNumerator1(), indParams), allColumns,
+		    Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "8D1", "", ReportUtils.map(indicators.iTSTrackingDenominator1(), indParams),
+		    allColumns, Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "11N1", "", ReportUtils.map(indicators.wHOStateNumerator1(), indParams), allColumns,
+		    Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "11N2", "", ReportUtils.map(indicators.wHOStateNumerator2(), indParams), allColumns,
+		    Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "11D1", "", ReportUtils.map(indicators.wHOStateDenominator1(), indParams), allColumns,
+		    Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "11D2", "", ReportUtils.map(indicators.wHOStateDenominator1(), indParams), allColumns,
+		    Arrays.asList("01", "02", "03"));
 		return dsd;
 	}
 	
