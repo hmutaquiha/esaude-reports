@@ -109,7 +109,7 @@ public class SetupQualityImprovementReport extends EsaudeDataExportManager {
 		dsd.setParameters(getParameters());
 		dsd.setName("Q");
 		
-		String indParams = "startDate=${startDate},endDate=${endDate},location=${location},revisionEndDate=${revisionEndDate}";
+		String indParams = "startDate=${startDate},endDate=${endDate},location=${location},revisionEndDate=${revisionEndDate},testStart=${testStart}";
 		//add dimensions to the dsd
 		dsd.addDimension("age", ReportUtils.map(commonDimension.dimForQualityImprovement(), "onDate=${endDate}"));
 		
@@ -177,6 +177,7 @@ public class SetupQualityImprovementReport extends EsaudeDataExportManager {
 	public List<Parameter> getParameters() {
 		return Arrays.asList(new Parameter("startDate", "Data Inicial Inclusão", Date.class), new Parameter("endDate",
 		        "Data Final Inclusão", Date.class), new Parameter("revisionEndDate", "Data Final Revisão", Date.class),
-		    new Parameter("location", "Unidade Sanitária", Location.class));
+		    new Parameter("location", "Unidade Sanitária", Location.class), new Parameter("testStart", "Testar Iniciar",
+		            Boolean.class));
 	}
 }

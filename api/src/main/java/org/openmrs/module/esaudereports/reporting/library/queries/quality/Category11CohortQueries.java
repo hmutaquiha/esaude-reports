@@ -1,4 +1,4 @@
-package org.openmrs.module.esaudereports.reporting.library.queries;
+package org.openmrs.module.esaudereports.reporting.library.queries.quality;
 
 /**
  * Classe contém as queries das cohorts de relatórios - Categoria 11:Estadiamento OMS

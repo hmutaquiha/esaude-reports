@@ -28,7 +28,7 @@ public class EmrReportingUtils {
 		ind.addParameter(new Parameter("endDate", "End Date", Date.class));
 		ind.addParameter(new Parameter("revisionEndDate", "Revision End Date", Date.class));
 		ind.addParameter(new Parameter("location", "Location", Location.class));
-		ind.addParameter(new Parameter("testStart", "Test Start", Location.class));
+		ind.addParameter(new Parameter("testStart", "Test Start", Boolean.class));
 		ind.setCohortDefinition(cohort);
 		return ind;
 	}
