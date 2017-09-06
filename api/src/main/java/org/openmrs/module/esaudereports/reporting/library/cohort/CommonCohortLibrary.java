@@ -5,10 +5,6 @@ import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.api.PatientSetService;
-import org.openmrs.module.esaudereports.reporting.cohort.definition.DateObsValueBetweenCohortDefinition;
-import org.openmrs.module.esaudereports.reporting.metadata.Dictionary;
-import org.openmrs.module.esaudereports.reporting.metadata.Metadata;
-import org.openmrs.module.esaudereports.reporting.utils.CoreUtils;
 import org.openmrs.module.esaudereports.reporting.utils.ReportUtils;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CodedObsCohortDefinition;
@@ -89,11 +85,12 @@ public class CommonCohortLibrary {
 	 * @return CohortDefinition
 	 */
 	public CohortDefinition agedAtLeastAgedAtMost(int minAge, int maxAge) {
-		AgeCohortDefinition cd = new AgeCohortDefinition();
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
 		cd.setName("aged between " + minAge + " and " + maxAge + " years");
 		cd.addParameter(new Parameter("effectiveDate", "Effective Date", Date.class));
-		cd.setMinAge(minAge);
-		cd.setMaxAge(maxAge);
+		cd.addSearch("min", ReportUtils.map(agedAtLeast(minAge), "effectiveDate=${effectiveDate}"));
+		cd.addSearch("max", ReportUtils.map(agedAtMost(maxAge), "effectiveDate=${effectiveDate}"));
+		cd.setCompositionString("min AND max");
 		return cd;
 	}
 	
