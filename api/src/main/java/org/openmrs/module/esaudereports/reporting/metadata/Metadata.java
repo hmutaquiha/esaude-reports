@@ -22,6 +22,36 @@ public class Metadata {
 		public final static String PREGNANCY_DUE_DATE_1600 = "e1dca8ee-1d5f-11e0-b929-000c29ad1d07";
 		
 		public final static String TB_TREATMENT_START_DATE = "e1d85906-1d5f-11e0-b929-000c29ad1d07"; //1113
+		
+		public final static String PROPHILAXY_WITH_COTRIMOXAZOL = "b8d4d132-08a5-4d8b-8f84-71c507c77f9f"; //6121
+		
+		public final static String PROPHILAXY_WITH_ISONIAZIDA = "2247ff80-9fb1-4ee4-add9-4b1b83cabb17"; //6122
+		
+		public final static String YES = "e24cb738-1d5f-11e0-b929-000c29ad1d07"; //1065
+		
+		public final static String PRESCRIBED_TREATMENT = "e24e6d12-1d5f-11e0-b929-000c29ad1d07"; //1719
+		
+		public final static String COTRIMOXAZOL = "e24f2c48-1d5f-11e0-b929-000c29ad1d07"; //916
+		
+		public final static String PROPHILAXY_WITH_ISONIAZIDA_START_DATE = "78726301-dd4f-4cb3-96d6-ff54a44dfe78"; //6128
+		
+		public final static String TB_TREATMENT = "e2568c72-1d5f-11e0-b929-000c29ad1d07"; //1268
+		
+		public final static String START = "e1d9ef28-1d5f-11e0-b929-000c29ad1d07"; //1256
+		
+		public final static String TB_TRACKING = "7dbe7f90-5458-4717-b9d5-342d41976b94"; //6257
+		
+		public final static String DATE_OF_BIRTH = "e1e765c2-1d5f-11e0-b929-000c29ad1d07";
+		
+		public final static String CRITERIA_FOR_ART_START = "607315ab-2f52-4d9f-b28a-6383b9a5f9c4";
+		
+		public final static String BREASTFEEDING = "bc4fe755-fc8f-49b8-9956-baf2477e8313";
+		
+		public final static String ART_MANAGEMENT = "e1d9ee10-1d5f-11e0-b929-000c29ad1d07";
+		
+		public final static String TRANSFERED_FROM = "e1da7d3a-1d5f-11e0-b929-000c29ad1d07";
+		
+		public final static String ART_START_DATE = "e1da7d3a-1d5f-11e0-b929-000c29ad1d07";
 	}
 	
 	public static class _EncounterType {
@@ -41,6 +71,8 @@ public class Metadata {
 		public final static String TUBERCULOSE_RASTREIO = "e27915a8-1d5f-11e0-b929-000c29ad1d07"; //20
 		
 		public final static String TUBERCULOSE_PROCESSO = "e2791cc4-1d5f-11e0-b929-000c29ad1d07"; //26
+		
+		public final static String PEDIATRIA_INICIAL_B = "e278f5aa-1d5f-11e0-b929-000c29ad1d07"; //3
 	}
 	
 	public static class _Program {
