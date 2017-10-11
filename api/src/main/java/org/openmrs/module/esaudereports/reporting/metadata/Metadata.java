@@ -20,7 +20,7 @@ public class Metadata {
 		public final static String NUMBER_OF_WEEKS_PREGNANT_1279 = "e1da0788-1d5f-11e0-b929-000c29ad1d07"; //1279
 		
 		public final static String PREGNANCY_DUE_DATE_1600 = "e1dca8ee-1d5f-11e0-b929-000c29ad1d07";
-
+		
 		public final static String TB_TREATMENT_START_DATE = "e1d85906-1d5f-11e0-b929-000c29ad1d07"; //1113
 	}
 	
@@ -35,11 +35,11 @@ public class Metadata {
 		public final static String PEDIATRIA_SEGUIMENTO_9 = "e278fce4-1d5f-11e0-b929-000c29ad1d07"; //9
 		
 		public final static String FARMACIA_18 = "e279133c-1d5f-11e0-b929-000c29ad1d07"; //18
-
+		
 		public final static String TUBERCULOSE_LIVRO = "e2791b98-1d5f-11e0-b929-000c29ad1d07"; //25
-
+		
 		public final static String TUBERCULOSE_RASTREIO = "e27915a8-1d5f-11e0-b929-000c29ad1d07"; //20
-
+		
 		public final static String TUBERCULOSE_PROCESSO = "e2791cc4-1d5f-11e0-b929-000c29ad1d07"; //26
 	}
 	

@@ -46,18 +46,4 @@ public class CommonDimension {
 		return dim;
 	}
 	
-	/**
-	 * Dimension of pregnant women
-	 * 
-	 * @return CohortDefinitionDimension
-	 */
-	public CohortDefinitionDimension pregnant() {
-		CohortDefinitionDimension dim = new CohortDefinitionDimension();
-		dim.setName("Pregnant Women");
-		dim.addParameter(new Parameter("OnOrAfter", "After Date", Date.class));
-		dim.addParameter(new Parameter("OnOrBefore", "Before Date", Date.class));
-		dim.addCohortDefinition("P", map(commonLibrary.pregnant(), "onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}"));
-		return dim;
-	}
-	
 }
