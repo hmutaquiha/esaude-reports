@@ -32,8 +32,8 @@ public class SaprAprDimension {
         dim.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
         dim.addParameter(new Parameter("endDate", "Data Final", Date.class));
         dim.addParameter(new Parameter("location", "Location", Location.class));
-        dim.addCohortDefinition("LACTANTE", map(saprAprCohort.breastFeedingOrPuerpueras(),"startDate=${startDate}, endDate=${endDate}, location=${location}"));
-        dim.addCohortDefinition("GRAVIDA", map(saprAprCohort.pregnantsInscribedOnARTService(),"startDate=${startDate}, endDate=${endDate}, location=${location}"));
+        dim.addCohortDefinition("LACTANTE", map(saprAprCohort.breastFeedingOrPuerpueras(),"startDate=${startDate},endDate=${endDate},location=${location}"));
+        dim.addCohortDefinition("GRAVIDA", map(saprAprCohort.pregnantsInscribedOnARTService(),"startDate=${startDate},endDate=${endDate},location=${location}"));
         return dim;
     }
 
