@@ -27,99 +27,96 @@ import java.util.List;
  */
 @Component
 public class SetupSaprAprReport extends EsaudeDataExportManager {
-
-    @Autowired
-    private SaprAprIndicators indicators;
-
-    @Autowired
-    private CommonDimension dimension;
-
-    @Autowired
-    private SaprAprDimension saprAprDimension;
-
-    @Override
-    public String getExcelDesignUuid() {
-        return "f2147824-87eb-11e7-98e7-e334661788be";
-    }
-
-    @Override
-    public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
-        List<ReportDesign> reportDesigns = new ArrayList<ReportDesign>();
-        reportDesigns.add(buildReportDesign(reportDefinition));
-        return reportDesigns;
-    }
-
-    @Override
-    public ReportDesign buildReportDesign(ReportDefinition reportDefinition) {
-        return createExcelTemplateDesign(getExcelDesignUuid(), reportDefinition, "SAPR_APR.xls");
-    }
-
-    @Override
-    public String getUuid() {
-        return "81e5e83e-87ec-11e7-bd7b-936806d95642";
-    }
-
-    @Override
-    public String getName() {
-        return "RELATORIO SAPR/APR - ARV";
-    }
-
-    @Override
-    public String getDescription() {
-        return "PEPFAR Report for ARV indicators";
-    }
-
-    @Override
-    public ReportDefinition constructReportDefinition() {
-        ReportDefinition rd = new ReportDefinition();
-        rd.setUuid(getUuid());
-        rd.setName(getName());
-        rd.setDescription(getDescription());
-        rd.setParameters(getParameters());
-        rd.addDataSetDefinition("S", Mapped.mapStraightThrough(dataSetDefinition()));
-        return rd;
-    }
-
-    private DataSetDefinition dataSetDefinition() {
-        CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
-        dsd.setName("S");
-        dsd.setParameters(getParameters());
-
-        String indParams = "startDate=${startDate},endDate=${endDate},location=${location}";
-
-        //add dimensions to the dsd
-        //		dsd.addDimension("age", ReportUtils.map(dimension.dimForQualityImprovement(), "onDate=${endDate}"));
-
-        dsd.addDimension("DAPR", ReportUtils.map(saprAprDimension.dimForSaprApr(), indParams));
-
-        //bulid the column parameters here
-
-        ColumnParameters breastFeeding = new ColumnParameters("LACTANTE", "LACTANTE", "DAPR=LACTANTE");
-        ColumnParameters pregnant = new ColumnParameters("GRAVIDA", "GRAVIDA", "DAPR=GRAVIDA");
-        ColumnParameters total = new ColumnParameters("Total", "Total", "");
-
-        //form columns as list to be used in the dsd
-        List<ColumnParameters> allColumns = Arrays.asList(breastFeeding, pregnant, total);
-
-        EmrReportingUtils.addRow(dsd, "INILACTANT", "",
-                ReportUtils.map(indicators.inCareWhoStartedTreatmentInPeriod(), indParams), allColumns,
-                Arrays.asList("01", "02", "03"));
-        EmrReportingUtils.addRow(dsd, "INIARVGRAV", "",
-                ReportUtils.map(indicators.inCareWhoStartedTreatmentInPeriod(), indParams), allColumns,
-                Arrays.asList("01", "02", "03"));
-
-        return dsd;
-    }
-
-    @Override
-    public String getVersion() {
-        return "0.1";
-    }
-
-    @Override
-    public List<Parameter> getParameters() {
-        return Arrays.asList(new Parameter("startDate", "Data Inicial", Date.class), new Parameter("endDate", "Data Final",
-                Date.class), new Parameter("revisionEndDate", "Data Final Revisão", Date.class), new Parameter("location",
-                "Unidade Sanitária", Location.class));
-    }
+	
+	@Autowired
+	private SaprAprIndicators indicators;
+	
+	@Autowired
+	private CommonDimension dimension;
+	
+	@Autowired
+	private SaprAprDimension saprAprDimension;
+	
+	@Override
+	public String getExcelDesignUuid() {
+		return "f2147824-87eb-11e7-98e7-e334661788be";
+	}
+	
+	@Override
+	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
+		List<ReportDesign> reportDesigns = new ArrayList<ReportDesign>();
+		reportDesigns.add(buildReportDesign(reportDefinition));
+		return reportDesigns;
+	}
+	
+	@Override
+	public ReportDesign buildReportDesign(ReportDefinition reportDefinition) {
+		return createExcelTemplateDesign(getExcelDesignUuid(), reportDefinition, "SAPR_APR.xls");
+	}
+	
+	@Override
+	public String getUuid() {
+		return "81e5e83e-87ec-11e7-bd7b-936806d95642";
+	}
+	
+	@Override
+	public String getName() {
+		return "RELATORIO SAPR/APR - ARV";
+	}
+	
+	@Override
+	public String getDescription() {
+		return "PEPFAR Report for ARV indicators";
+	}
+	
+	@Override
+	public ReportDefinition constructReportDefinition() {
+		ReportDefinition rd = new ReportDefinition();
+		rd.setUuid(getUuid());
+		rd.setName(getName());
+		rd.setDescription(getDescription());
+		rd.setParameters(getParameters());
+		rd.addDataSetDefinition("S", Mapped.mapStraightThrough(dataSetDefinition()));
+		return rd;
+	}
+	
+	private DataSetDefinition dataSetDefinition() {
+		CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
+		dsd.setName("S");
+		dsd.setParameters(getParameters());
+		
+		String indParams = "startDate=${startDate},endDate=${endDate},location=${location}";
+		
+		dsd.addDimension("DAPR", ReportUtils.map(saprAprDimension.dimForSaprApr(), indParams));
+		
+		//bulid the column parameters here
+		
+		ColumnParameters breastFeeding = new ColumnParameters("LACTANTE", "LACTANTE", "DAPR=L");
+		ColumnParameters pregnant = new ColumnParameters("GRAVIDA", "GRAVIDA", "DAPR=G");
+		ColumnParameters total = new ColumnParameters("Total", "Total", "");
+		
+		//form columns as list to be used in the dsd
+		List<ColumnParameters> allColumns = Arrays.asList(breastFeeding, pregnant, total);
+		
+		EmrReportingUtils.addRow(dsd, "INILACTANT", "",
+		    ReportUtils.map(indicators.inCareWhoStartedTreatmentInPeriod(), indParams), allColumns,
+		    Arrays.asList("01", "02", "03"));
+		EmrReportingUtils.addRow(dsd, "INIARVGRAV", "",
+		    ReportUtils.map(indicators.inCareWhoStartedTreatmentInPeriod(), indParams), allColumns,
+		    Arrays.asList("01", "02", "03"));
+		
+		return dsd;
+	}
+	
+	@Override
+	public String getVersion() {
+		return "0.1";
+	}
+	
+	@Override
+	public List<Parameter> getParameters() {
+		return Arrays.asList(new Parameter("startDate", "Data Inicial", Date.class), new Parameter("endDate", "Data Final",
+		        Date.class), new Parameter("revisionEndDate", "Data Final Revisão", Date.class), new Parameter("location",
+		        "Unidade Sanitária", Location.class));
+	}
 }
