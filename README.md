@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/esaude/esaude-reports.svg?branch=master)](https://travis-ci.org/esaude/esaude-reports)
+[![Coverage Status](https://coveralls.io/repos/github/esaude/esaude-reports/badge.svg?branch=master)](https://coveralls.io/github/esaude/esaude-reports?branch=master)
+
 ${moduleName}
 ==========================
 

@@ -18,7 +18,7 @@ import static org.openmrs.module.esaudereports.reporting.utils.ReportUtils.map;
 public class SaprAprDimension {
 	
 	@Autowired
-	SaprAprCohort saprAprCohort;
+	private SaprAprCohort saprAprCohort;
 	
 	/**
 	 * Dimensions of age for children and adults for quality improvement report
@@ -31,16 +31,13 @@ public class SaprAprDimension {
 		dim.setDescription("Dimensão para indicadores do APR: Data Inicial: grávidas, Lactante, DAM e DAG");
 		dim.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
 		dim.addParameter(new Parameter("endDate", "Data Final", Date.class));
-		dim.addParameter(new Parameter("location", "US", Location.class));
+		dim.addParameter(new Parameter("location", "Location", Location.class));
+		dim.addCohortDefinition("L",
+		    map(saprAprCohort.breastFeedingOrPuerpueras(), "startDate=${startDate},endDate=${endDate},location=${location}"));
 		dim.addCohortDefinition(
-		    "LACTANTE",
-		    map(saprAprCohort.breastFeedingOrPuerpueras(),
-		        "startDate=${startDate}, endDate=${endDate}, location=${location}"));
-		dim.addCohortDefinition(
-		    "GRAVIDA",
+		    "G",
 		    map(saprAprCohort.pregnantsInscribedOnARTService(),
-		        "startDate=${startDate}, endDate=${endDate}, location=${location}"));
-		
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
 		return dim;
 	}
 	

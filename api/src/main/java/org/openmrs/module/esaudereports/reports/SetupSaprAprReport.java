@@ -87,15 +87,12 @@ public class SetupSaprAprReport extends EsaudeDataExportManager {
 		
 		String indParams = "startDate=${startDate},endDate=${endDate},location=${location}";
 		
-		//add dimensions to the dsd
-		//		dsd.addDimension("age", ReportUtils.map(dimension.dimForQualityImprovement(), "onDate=${endDate}"));
-		
 		dsd.addDimension("DAPR", ReportUtils.map(saprAprDimension.dimForSaprApr(), indParams));
 		
 		//bulid the column parameters here
 		
-		ColumnParameters breastFeeding = new ColumnParameters("LACTANTE", "LACTANTE", "DAPR=LACTANTE");
-		ColumnParameters pregnant = new ColumnParameters("GRAVIDA", "GRAVIDA", "DAPR=GRAVIDA");
+		ColumnParameters breastFeeding = new ColumnParameters("LACTANTE", "LACTANTE", "DAPR=L");
+		ColumnParameters pregnant = new ColumnParameters("GRAVIDA", "GRAVIDA", "DAPR=G");
 		ColumnParameters total = new ColumnParameters("Total", "Total", "");
 		
 		//form columns as list to be used in the dsd
