@@ -14,6 +14,7 @@ import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.GenderCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.NumericObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.ProgramEnrollmentCohortDefinition;
+import org.openmrs.module.reporting.common.DurationUnit;
 import org.openmrs.module.reporting.common.RangeComparator;
 import org.openmrs.module.reporting.common.SetComparator;
 import org.openmrs.module.reporting.common.TimeQualifier;
@@ -168,6 +169,49 @@ public class CommonCohortLibrary {
 		cd.setValue1(lower);
 		cd.setOperator2(RangeComparator.LESS_EQUAL);
 		cd.setValue2(upper);
+		return cd;
+	}
+	
+	/**
+	 * Patients who at most maxAge months old on ${effectiveDate}
+	 * 
+	 * @return the cohort definition
+	 */
+	public CohortDefinition agedAtMostInMonths(int maxAge) {
+		AgeCohortDefinition cd = new AgeCohortDefinition();
+		cd.setName("aged at most " + maxAge + " months");
+		cd.addParameter(new Parameter("effectiveDate", "Effective Date", Date.class));
+		cd.setMaxAge(maxAge);
+		cd.setMaxAgeUnit(DurationUnit.MONTHS);
+		return cd;
+	}
+	
+	/**
+	 * Patients who are at least minAge months old on ${effectiveDate}
+	 * 
+	 * @return the cohort definition
+	 */
+	public CohortDefinition agedAtLeastInMonths(int minAge) {
+		AgeCohortDefinition cd = new AgeCohortDefinition();
+		cd.setName("aged at least " + minAge + " months");
+		cd.addParameter(new Parameter("effectiveDate", "Effective Date", Date.class));
+		cd.setMinAge(minAge);
+		cd.setMinAgeUnit(DurationUnit.MONTHS);
+		return cd;
+	}
+	
+	/**
+	 * patients who are at least minAge months old and at most months old on ${effectiveDate}
+	 * 
+	 * @return CohortDefinition
+	 */
+	public CohortDefinition agedAtLeastAgedAtMostInMonths(int minAge, int maxAge) {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("aged between " + minAge + " and " + maxAge + " months");
+		cd.addParameter(new Parameter("effectiveDate", "Effective Date", Date.class));
+		cd.addSearch("minMonths", ReportUtils.map(agedAtLeastInMonths(minAge), "effectiveDate=${effectiveDate}"));
+		cd.addSearch("maxMonths", ReportUtils.map(agedAtMostInMonths(maxAge), "effectiveDate=${effectiveDate}"));
+		cd.setCompositionString("minMonths AND maxMonths");
 		return cd;
 	}
 }

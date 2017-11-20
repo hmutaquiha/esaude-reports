@@ -32,7 +32,7 @@ public class SetupSaprAprReport extends EsaudeDataExportManager {
 	private SaprAprIndicators indicators;
 	
 	@Autowired
-	private CommonDimension dimension;
+	private CommonDimension commonDimension;
 	
 	@Autowired
 	private SaprAprDimension saprAprDimension;
@@ -88,6 +88,8 @@ public class SetupSaprAprReport extends EsaudeDataExportManager {
 		String indParams = "startDate=${startDate},endDate=${endDate},location=${location}";
 		
 		dsd.addDimension("DAPR", ReportUtils.map(saprAprDimension.dimForSaprApr(), indParams));
+		dsd.addDimension("ageInYears", ReportUtils.map(commonDimension.arvAgeBandsInYears()));
+		dsd.addDimension("ageInMonths", ReportUtils.map(commonDimension.arvAgeBandsInMonths()));
 		
 		//bulid the column parameters here
 		
@@ -110,7 +112,7 @@ public class SetupSaprAprReport extends EsaudeDataExportManager {
 	
 	@Override
 	public String getVersion() {
-		return "0.1";
+		return "0.100";
 	}
 	
 	@Override
