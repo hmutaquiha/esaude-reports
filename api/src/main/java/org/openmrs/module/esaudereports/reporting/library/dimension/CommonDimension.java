@@ -47,11 +47,11 @@ public class CommonDimension {
 	}
 	
 	/**
-	 * Dimension of age for patients on ARV of different age group
+	 * Dimension of age for patients on ARV of different age group in years
 	 * 
 	 * @return CohortDefinitionDimension
 	 */
-	public CohortDefinitionDimension arvAgeBands() {
+	public CohortDefinitionDimension arvAgeBandsInYears() {
 		CohortDefinitionDimension dim = new CohortDefinitionDimension();
 		dim.setName("age group (<1, 1-4, 5-9, 5-14, 10-14, 15-19, 20-24, 25-49, 0-14, 15+, 20+, 50+ )");
 		dim.addParameter(new Parameter("onDate", "Date", Date.class));
@@ -69,6 +69,19 @@ public class CommonDimension {
 		dim.addCohortDefinition("25-49", map(commonLibrary.agedAtLeastAgedAtMost(25, 49), "effectiveDate=${onDate}"));
 		dim.addCohortDefinition("50+", map(commonLibrary.agedAtLeast(50), "effectiveDate=${onDate}"));
 		dim.addCohortDefinition("20+", map(commonLibrary.agedAtLeast(20), "effectiveDate=${onDate}"));
+		return dim;
+	}
+	
+	/**
+	 * Dimension of age for patients on ARV of different age group in months
+	 * 
+	 * @return CohortDefinitionDimension
+	 */
+	public CohortDefinitionDimension arvAgeBandsInMonths() {
+		CohortDefinitionDimension dim = new CohortDefinitionDimension();
+		dim.setName("age group in months(24-59)");
+		dim.addParameter(new Parameter("onDate", "Date", Date.class));
+		dim.addCohortDefinition("24-59", map(commonLibrary.agedAtLeastAgedAtMostInMonths(24, 59), "effectiveDate=${onDate}"));
 		return dim;
 	}
 	

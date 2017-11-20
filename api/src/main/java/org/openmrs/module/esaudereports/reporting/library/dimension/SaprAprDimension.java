@@ -38,6 +38,23 @@ public class SaprAprDimension {
 		    "G",
 		    map(saprAprCohort.pregnantsInscribedOnARTService(),
 		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+		dim.addCohortDefinition("C0T14_START_DATE",
+		    map(saprAprCohort.children0To14Years(), "endDate=${endDate},location=${location}"));
+		dim.addCohortDefinition("A15+_START_DATE",
+		    map(saprAprCohort.adults15PlusYears(), "endDate=${endDate},location=${location}"));
+		dim.addCohortDefinition("DETECTABLEVL",
+		    map(saprAprCohort.patientsWithDetectableViralLoadLast12Months(), "endDate=${endDate},location=${location}"));
+		dim.addCohortDefinition("UNDETECTABLEVL",
+		    map(saprAprCohort.patientsWithUndetectableViralLoadLast12Months(), "endDate=${endDate},location=${location}"));
+		dim.addCohortDefinition(
+		    "CVROTINA",
+		    map(saprAprCohort.pregnantsBreastfeedingAndChildrenWithViralLoadResultLast12Months(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+		dim.addCohortDefinition(
+		    "CVTARGETED",
+		    map(saprAprCohort.nonPregnantsBreastfeedingAndChildrenWithViralLoadResultLast12Months(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
 		return dim;
 	}
 	
