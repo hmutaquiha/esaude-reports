@@ -121,12 +121,12 @@ public class CommonCohortLibrary {
 	 * @param answers the answers to include
 	 * @return the cohort definition
 	 */
-	public CohortDefinition hasObs(Concept question, Concept... answers) {
+	public CohortDefinition hasObs(Concept question,PatientSetService.TimeModifier timeModifier, Concept... answers) {
 		CodedObsCohortDefinition cd = new CodedObsCohortDefinition();
 		cd.setName("has obs between dates");
 		cd.setQuestion(question);
 		cd.setOperator(SetComparator.IN);
-		cd.setTimeModifier(PatientSetService.TimeModifier.ANY);
+		cd.setTimeModifier(timeModifier);
 		cd.addParameter(new Parameter("onOrBefore", "Before Date", Date.class));
 		cd.addParameter(new Parameter("onOrAfter", "After Date", Date.class));
 		if (answers.length > 0) {
