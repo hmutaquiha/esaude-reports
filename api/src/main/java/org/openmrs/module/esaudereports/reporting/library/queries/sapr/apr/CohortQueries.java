@@ -14,7 +14,7 @@ public class CohortQueries {
 	        + " where 	pg.voided=0 and ps.voided=0 and p.voided=0 and"
 	        + " pg.program_id=2 and ps.state=29 and ps.start_date=pg.date_enrolled and"
 	        + " ps.start_date between :startDate and :endDate and location_id=:location";
-
+	
 	/**
 	 * INICIO DE TRATAMENTO ARV - NUM PERIODO: INCLUI TRANSFERIDOS DE COM DATA DE INICIO CONHECIDA
 	 * (SQL)
@@ -51,7 +51,7 @@ public class CohortQueries {
 	        + " 		WHERE	p.voided=0 and e.encounter_type=18 AND e.voided=0 and e.encounter_datetime<=:endDate and e.location_id=:location"
 	        + " 		GROUP BY p.patient_id" + " 	) inicio_real" + " 	group by patient_id" + " )inicio"
 	        + " where data_inicio between :startDate and :endDate";
-
+	
 	/**
 	 * GRAVIDAS INSCRITAS NO SERVIÇO TARV
 	 */
@@ -76,7 +76,7 @@ public class CohortQueries {
 	        + " union" + " select 	pp.patient_id" + " from 	patient_program pp"
 	        + " where 	pp.program_id=8 and pp.voided=0 and"
 	        + " 		pp.date_enrolled between :startDate and :endDate and pp.location_id=:location";
-
+	
 	/**
 	 * PROGRAMA: PACIENTES QUE DERAM PARTO HÁ DOIS ANOS ATRÁS DA DATA DE REFERENCIA - LACTANTES
 	 */
@@ -87,14 +87,14 @@ public class CohortQueries {
 	        + " where 	pg.voided=0 and ps.voided=0 and p.voided=0 and"
 	        + " 		pg.program_id=8 and ps.state=27 and ps.end_date is null and"
 	        + " 		ps.start_date between date_add(:startDate, interval -2 year) and date_add(:startDate, interval -1 day) and location_id=:location";
-
+	
 	/**
 	 * PROGRAMA: PACIENTES INSCRITOS NO PROGRAMA TRATAMENTO ARV (TARV) - PERIODO FINAL
 	 */
 	public static final String PATIENTS_INSCRIBED_ON_ART_PROGRAM = "select 	pg.patient_id"
 	        + " from 	patient p inner join patient_program pg on p.patient_id=pg.patient_id"
 	        + " where 	pg.voided=0 and p.voided=0 and program_id=2 and date_enrolled<=:endDate and location_id=:location";
-
+	
 	/**
 	 * PROGRAMA: PACIENTES QUE SAIRAM DO PROGRAMA DE TRATAMENTO ARV: PERIODO FINAL
 	 */
@@ -103,7 +103,7 @@ public class CohortQueries {
 	        + " inner join patient_state ps on pg.patient_program_id=ps.patient_program_id"
 	        + " where 	pg.voided=0 and ps.voided=0 and p.voided=0 and" + " pg.program_id=2 and ps.state in (7,8,9,10)"
 	        + " and ps.end_date is null" + " and ps.start_date<=:endDate and location_id=:location";
-
+	
 	/**
 	 * PROGRAMA: PACIENTES QUE SAIRAM DO PROGRAMA DE TRATAMENTO ARV: PERIODO FINAL
 	 */
@@ -167,7 +167,7 @@ public class CohortQueries {
 	        + " 	) ultimo_fila on abandono.patient_id=ultimo_fila.patient_id"
 	        + " 	where datediff(:endDate,ultimo_fila.value_datetime)<60" + " )"
 	        + " and datediff(:endDate,o.value_datetime)>60";
-
+	
 	/**
 	 * PACIENTES ACTIVOS NO GAAC ATÉ UM DETERMINADO PERIODO
 	 */
@@ -176,7 +176,7 @@ public class CohortQueries {
 	        + " where gm.start_date<:endDate and gm.voided=0 and g.voided=0"
 	        + " and ((leaving is null) or (leaving=0) or (leaving=1 and gm.end_date>:endDate))"
 	        + " and location_id=:location";
-
+	
 	/**
 	 * PROGRAMA: PACIENTES QUE SAIRAM DO PROGRAMA DE TRATAMENTO ARV - OBITOU: PERIODO FINAL
 	 */
@@ -186,7 +186,7 @@ public class CohortQueries {
 	        + " where 	pg.voided=0 and ps.voided=0 and p.voided=0 and"
 	        + " pg.program_id=2 and ps.state=10 and ps.end_date is null and"
 	        + " ps.start_date<=:endDate and location_id=:location";
-
+	
 	/**
 	 * PROGRAMA: PACIENTES QUE SAIRAM DO PROGRAMA DE TRATAMENTO ARV - ABANDONO: PERIODO FINAL
 	 */
@@ -196,7 +196,7 @@ public class CohortQueries {
 	        + " where 	pg.voided=0 and ps.voided=0 and p.voided=0 and"
 	        + " pg.program_id=2 and ps.state=9 and ps.end_date is null and"
 	        + " ps.start_date<=:endDate and location_id=:location";
-
+	
 	/**
 	 * PROGRAMA: PACIENTES QUE SAIRAM DO PROGRAMA DE TRATAMENTO ARV - TRANSFERIDO PARA: PERIODO
 	 * FINAL
@@ -207,7 +207,7 @@ public class CohortQueries {
 	        + " where 	pg.voided=0 and ps.voided=0 and p.voided=0 and"
 	        + " pg.program_id=2 and ps.state=7 and ps.end_date is null and"
 	        + " ps.start_date<=:endDate and location_id=:location";
-
+	
 	/**
 	 * PROGRAMA: PACIENTES QUE SAIRAM DO PROGRAMA DE TRATAMENTO ARV - SUSPENSO: PERIODO FINAL
 	 */
@@ -217,7 +217,7 @@ public class CohortQueries {
 	        + " where 	pg.voided=0 and ps.voided=0 and p.voided=0 and"
 	        + " pg.program_id=2 and ps.state=8 and ps.end_date is null and"
 	        + " ps.start_date<=:endDate and location_id=:location";
-
+	
 	/**
 	 * CRIANCAS DE 0-14 ANOS QUE INCIARAM TARV - IDADE NO INICIO DE TARV
 	 */
@@ -255,7 +255,7 @@ public class CohortQueries {
 	        + " group by p.patient_id" + " 		) inicio" + " 	group by patient_id"
 	        + " 	)inicio_real inner join person pe on inicio_real.patient_id=pe.person_id"
 	        + " 	where (datediff(data_inicio,birthdate)/365)<15";
-
+	
 	/**
 	 * ADULTOS DE 15+ ANOS QUE INICIARAM TARV - IDADE NO INICIO DE TARV
 	 */
@@ -293,7 +293,7 @@ public class CohortQueries {
 	        + " group by p.patient_id" + " 		) inicio" + " 	group by patient_id"
 	        + " 	)inicio_real inner join person pe on inicio_real.patient_id=pe.person_id"
 	        + " 	where (datediff(data_inicio,birthdate)/365)>=15";
-
+	
 	/**
 	 * PROGRAMA: PACIENTES QUE SAIRAM DO PROGRAMA DE TRATAMENTO ARV - SUSPENSO, ABANDONO, OBITO,
 	 * TRANSFERIDO PARA: PERIODO FINAL
@@ -304,7 +304,7 @@ public class CohortQueries {
 	        + " where 	pg.voided=0 and ps.voided=0 and p.voided=0 and"
 	        + " pg.program_id=2 and ps.state in (:state) and ps.end_date is null and"
 	        + " ps.start_date<=:endDate and location_id=:location";
-
+	
 	/**
 	 * FALHAS CLINICAS - SQL
 	 */
@@ -390,7 +390,7 @@ public class CohortQueries {
 	        + " 		(round(datediff(:endDate,birthdate)/365)<=14 and valor_estadio_antes<=1205 and valor_estadio_depois>=1206) or"
 	        + " 		(round(datediff(:endDate,birthdate)/365)>=15 and valor_estadio_antes<=1206 and valor_estadio_depois=1207)"
 	        + " 	) and valor_estadio_depois>valor_estadio_antes";
-
+	
 	/**
 	 * FALHAS IMUNOLOGICAS - SQL
 	 */
@@ -474,7 +474,7 @@ public class CohortQueries {
 	        + " 			(round(datediff(:endDate,birthdate)/365) between 5 and 14 and ((valor_cd4_antes<100 and valor_cd4_depois<100) or (valor_cd4_depois<valor_cd4_antes))) or"
 	        + " 			(round(datediff(:endDate,birthdate)/365)>=15 and ((valor_cd4_antes<100 and valor_cd4_depois<100) or (valor_cd4_depois<valor_cd4_antes) or (valor_cd4_depois<(cd4_pico/2))))"
 	        + " 		)";
-
+	
 	/**
 	 * PACIENTES QUE ESTAO A MAIS DE 6 MESES EM TARV
 	 */
@@ -511,7 +511,7 @@ public class CohortQueries {
 	        + " 			where 	p.voided=0 and e.voided=0 and e.encounter_type=18 and e.encounter_datetime<=:endDate and e.location_id=:location"
 	        + " 			group by p.patient_id" + " 		) inicio" + " 	group by patient_id" + " )inicio_real"
 	        + " where timestampdiff (MONTH,data_inicio,:endDate)>=6";
-
+	
 	/**
 	 * PACIENTES COM RESULTADO DE CARGA VIRAL NOS ULTIMOS 12 MESES
 	 */
@@ -522,7 +522,7 @@ public class CohortQueries {
 	        + " where 	p.voided=0 and e.voided=0 and o.voided=0 and e.encounter_type in (13,6,9) and"
 	        + " o.concept_id=856 and o.value_numeric is not null and"
 	        + " e.encounter_datetime between date_add(:endDate, interval -12 MONTH) and :endDate and e.location_id=:location";
-
+	
 	/**
 	 * PACIENTES COM CARGA VIRAL DETECTAVEL NOS ULTIMOS 12 MESESgit
 	 */
@@ -538,7 +538,7 @@ public class CohortQueries {
 	        + " group by p.patient_id" + " ) ultima_carga"
 	        + " inner join obs on obs.person_id=ultima_carga.patient_id and obs.obs_datetime=ultima_carga.data_carga"
 	        + " where 	obs.voided=0 and obs.concept_id=856 and obs.location_id=:location and obs.value_numeric>=1000";
-
+	
 	/**
 	 * PACIENTES COM CARGA VIRAL INDETECTAVEL NOS ULTIMOS 12 MESES
 	 */
@@ -554,7 +554,7 @@ public class CohortQueries {
 	        + " group by p.patient_id" + " ) ultima_carga"
 	        + " inner join obs on obs.person_id=ultima_carga.patient_id and obs.obs_datetime=ultima_carga.data_carga"
 	        + " where 	obs.voided=0 and obs.concept_id=856 and obs.location_id=:location and obs.value_numeric<1000";
-
+	
 	/**
 	 * PROGRAMA: PACIENTES INSCRITOS NO PROGRAMA DE TUBERCULOSE - NUM PERIODO
 	 */
