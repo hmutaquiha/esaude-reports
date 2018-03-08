@@ -158,17 +158,47 @@ public class CommonCohortLibrary {
 	 * 
 	 * @return CohortDefinition
 	 */
-	public CohortDefinition hasNumericObs(Concept q, double lower, double upper) {
+	public CohortDefinition hasNumericObs(Concept q, PatientSetService.TimeModifier timeModifier, double lower, double upper) {
 		NumericObsCohortDefinition cd = new NumericObsCohortDefinition();
 		cd.setName("Has numeric ranging between " + lower + " and " + upper);
 		cd.addParameter(new Parameter("onOrAfter", "Start Date", Date.class));
 		cd.addParameter(new Parameter("onOrBefore", "End Date", Date.class));
 		cd.setQuestion(q);
-		cd.setTimeModifier(PatientSetService.TimeModifier.ANY);
+		cd.setTimeModifier(timeModifier);
 		cd.setOperator1(RangeComparator.GREATER_THAN);
 		cd.setValue1(lower);
 		cd.setOperator2(RangeComparator.LESS_EQUAL);
 		cd.setValue2(upper);
+		return cd;
+	}
+	
+	/**
+	 * Genearl finding of numeric obs
+	 * 
+	 * @return CohortDefinition
+	 */
+	public CohortDefinition hasNumericObs(Concept q, PatientSetService.TimeModifier timeModifier, double upper) {
+		NumericObsCohortDefinition cd = new NumericObsCohortDefinition();
+		cd.setName("Has numeric ranging up to " + upper);
+		cd.addParameter(new Parameter("onOrBefore", "End Date", Date.class));
+		cd.setQuestion(q);
+		cd.setTimeModifier(timeModifier);
+		cd.setOperator1(RangeComparator.LESS_EQUAL);
+		cd.setValue1(upper);
+		return cd;
+	}
+	
+	/**
+	 * Genearl finding of numeric obs
+	 * 
+	 * @return CohortDefinition
+	 */
+	public CohortDefinition hasNumericObs(Concept q, PatientSetService.TimeModifier timeModifier) {
+		NumericObsCohortDefinition cd = new NumericObsCohortDefinition();
+		cd.setName("Has numeric");
+		cd.addParameter(new Parameter("onOrBefore", "End Date", Date.class));
+		cd.setQuestion(q);
+		cd.setTimeModifier(timeModifier);
 		return cd;
 	}
 	

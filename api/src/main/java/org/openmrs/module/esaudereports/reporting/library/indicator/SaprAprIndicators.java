@@ -411,4 +411,281 @@ public class SaprAprIndicators {
 		    map(cohort.patientsNotifiedTBTreatmentWhoStartedART(),
 		        "startDate=${startDate},endDate=${endDate},location=${location}"));
 	}
+	
+	/**
+	 * PACIENTES NOTIFICADOS DO TRATAMENTO DE TB NO SERVICO TARV - ACTIVOS EM TARV
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator patientsActiveInARTNotifiedTBTreatmentOnARTService() {
+		return cohortIndicator(
+		    "PACIENTES NOTIFICADOS DO TRATAMENTO DE TB NO SERVICO TARV - ACTIVOS EM TARV",
+		    map(cohort.patientsActiveInARTNotifiedTBTreatmentOnARTService(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * PACIENTES NOTIFICADOS DO TRATAMENTO DE TB NO SERVICO TARV - NOVOS INICIOS
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator patientsNotifiedTBTreatmentOnARTServiceWhoStartedART() {
+		return cohortIndicator(
+		    "PACIENTES NOTIFICADOS DO TRATAMENTO DE TB NO SERVICO TARV - NOVOS INICIOS",
+		    map(cohort.patientsNotifiedTBTreatmentOnARTServiceWhoStartedART(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES ACTUALMENTE EM TARV COM RASTREIO DE TUBERCULOSE POSITIVO NUM DETERMINADO
+	 * PERIODO
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfpatientsActiveInARTWithPositiveTBTracking() {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES ACTUALMENTE EM TARV COM RASTREIO DE TUBERCULOSE POSITIVO NUM DETERMINADO PERIODO",
+		    map(cohort.patientsActiveInARTWithPositiveTBTracking(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES ACTUALMENTE EM TARV COM RASTREIO DE TUBERCULOSE NEGATIVO NUM DETERMINADO
+	 * PERIODO
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsActiveInARTWithNegativeTBTracking() {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES ACTUALMENTE EM TARV COM RASTREIO DE TUBERCULOSE NEGATIVO NUM DETERMINADO PERIODO",
+		    map(cohort.patientsActiveInARTWithNegativeTBTracking(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * INICIO DE TARV E COM RASTREIO TB POSITIVO - NUM PERIODO: EXCLUI TRANSFERIDOS DE COM DATA DE
+	 * INICIO CONHECIDA
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsWithPositiveTBTrackingWhoStartedART() {
+		return cohortIndicator(
+		    "INICIO DE TARV E COM RASTREIO TB POSITIVO - NUM PERIODO: EXCLUI TRANSFERIDOS DE COM DATA DE INICIO CONHECIDA ",
+		    map(cohort.patientsWithPositiveTBTrackingWhoStartedART(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * INICIO DE TARV E COM RASTREIO TB NEGATIVO - NUM PERIODO: EXCLUI TRANSFERIDOS DE COM DATA DE
+	 * INICIO CONHECIDA
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsWithNegativeTBTrackingWhoStartedART() {
+		return cohortIndicator(
+		    "INICIO DE TARV E COM RASTREIO TB NEGATIVO - NUM PERIODO: EXCLUI TRANSFERIDOS DE COM DATA DE INICIO CONHECIDA",
+		    map(cohort.patientsWithNegativeTBTrackingWhoStartedART(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES QUE ALGUMA VEZ ESTIVERAM EM TARV COM RASTREIO DE TB POSITIVO E TIVERAM
+	 * TESTE DE DIAGNOSTICO DE TB (BK ou RX) POSITIVO
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsEverInARTWithPositiveTBTrackingWhoHadPositiveDiagnoseTest() {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES QUE ALGUMA VEZ ESTIVERAM EM TARV COM RASTREIO DE TB POSITIVO E TIVERAM TESTE DE DIAGNOSTICO DE TB (BK ou RX) POSITIVO",
+		    map(cohort.patientsEverInARTWithPositiveTBTrackingWhoHadPositiveDiagnoseTest(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES QUE ALGUMA VEZ ESTIVERAM EM TARV COM RASTREIO DE TB POSITIVO E TIVERAM
+	 * TESTE DE DIAGNOSTICO DE TB (BK ou RX) NEGATIVO
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsEverInARTWithPositiveTBTrackingWhoHadNegativeDiagnoseTest() {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES QUE ALGUMA VEZ ESTIVERAM EM TARV COM RASTREIO DE TB POSITIVO E TIVERAM TESTE DE DIAGNOSTICO DE TB (BK ou RX) NEGATIVO",
+		    map(cohort.patientsEverInARTWithPositiveTBTrackingWhoHadNegativeDiagnoseTest(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES TARV QUE INICIARAM E TERMINARAM PROFILAXIA COM ISONIAZIDA O TERMINO DEVE
+	 * TER DATA FIM PREENCHIDA
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsWhoStartedAndFinishedProphilaxyWithIsoniazida() {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES TARV QUE INICIARAM E TERMINARAM PROFILAXIA COM ISONIAZIDA O TERMINO DEVE TER DATA FIM PREENCHIDA",
+		    map(cohort.patientsWhoStartedAndFinishedProphilaxyWithIsoniazida(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES TARV QUE INICIARAM E TERMINARAM PROFILAXIA COM ISONIAZIDA O TERMINO DEVE
+	 * TER DATA FIM PREENCHIDA: INICIO TPI PERIODO ANTERIOR
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsWhoStartedAndFinishedProphilaxyWithIsoniazidaPreviousPeriod() {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES TARV QUE INICIARAM E TERMINARAM PROFILAXIA COM ISONIAZIDA O TERMINO DEVE TER DATA FIM PREENCHIDA: INICIO TPI PERIODO ANTERIOR",
+		    map(cohort.patientsWhoStartedAndFinishedProphilaxyWithIsoniazidaPreviousPeriod(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES TARV QUE INICIARAM E CONTINUAM EM PROFILAXIA COM ISONIZIDA: INICIOU E NÃO
+	 * TEM DATA FIM
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsWhoStartedAndContinueProphilaxyWithIsoniazida() {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES TARV QUE INICIARAM E CONTINUAM EM PROFILAXIA COM ISONIZIDA: INICIOU E NÃO TEM DATA FIM",
+		    map(cohort.patientsWhoStartedAndContinueProphilaxyWithIsoniazida(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES TAV QUE INICIARAM E CONTINUAM EM PROFILAXIA COM ISONIZIDA: INICIOU E NÃO
+	 * TEM DATA FIM - INICIO TPI PERIODO ANTERIOR
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsWhoStartedAndContinueProphilaxyWithIsoniazidaPreviousPeriod() {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES TAV QUE INICIARAM E CONTINUAM EM PROFILAXIA COM ISONIZIDA: INICIOU E NÃO TEM DATA FIM - INICIO TPI PERIODO ANTERIOR",
+		    map(cohort.patientsWhoStartedAndContinueProphilaxyWithIsoniazidaPreviousPeriod(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES QUE ALGUMA VEZ INICIOU TARV E QUE INICIOU A PROFILAXIA COM TPI NUM
+	 * DETERMINADO PERIODO
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsEverStartedARTAndStartedProphilaxyWithIsoniazida() {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES QUE ALGUMA VEZ INICIOU TARV E QUE INICIOU A PROFILAXIA COM TPI NUM DETERMINADO PERIODO",
+		    map(cohort.patientsEverStartedARTAndStartedProphilaxyWithIsoniazida(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES QUE ALGUMA VEZ INICIOU TARV E QUE INICIOU A PROFILAXIA COM TPI: PERIODO
+	 * ANTERIOR - 6 MESES
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsEverStartedARTAndStartedProphilaxyWithIsoniazidaPreviousPeriod() {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES QUE ALGUMA VEZ INICIOU TARV E QUE INICIOU A PROFILAXIA COM TPI: PERIODO ANTERIOR - 6 MESES",
+		    map(cohort.patientsEverStartedARTAndStartedProphilaxyWithIsoniazida(),
+		        "startDate=${startDate-6m},endDate=${startDate-1d},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES QUE INICIARAM TARV - NUM PERIODO: MES ANTERIOR
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsWhoStartedARTLastMonth() {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES QUE INICIARAM TARV - NUM PERIODO: MES ANTERIOR",
+		    map(cohort.aRTStartInPeriodExcludingTransfersFrom(),
+		        "startDate=${startDate-29d},endDate=${startDate-1d},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES QUE INICIARAM TARV DENTRO DE 30 DIAS DEPOIS DE DECLARADAS ELEGIVEIS: MES
+	 * ANTERIOR
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsWhoStartedARTLastMonth(int days) {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES QUE INICIARAM TARV DENTRO DE 30 DIAS DEPOIS DE DECLARADAS ELEGIVEIS: MES ANTERIOR",
+		    map(cohort.patientsWhoStartedARTXDaysAfterDeclaredIlegible(),
+		        "startDate=${startDate-29d},endDate=${startDate-1d},location=${location},days=" + days));
+	}
+	
+	/**
+	 * PACIENTES COM RESULTADO DE CARGA VIRAL NUM DETERMINADO PERIODO
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator patientsWithViralLoadResultsInPeriod() {
+		return cohortIndicator(
+		    "PACIENTES COM RESULTADO DE CARGA VIRAL NUM DETERMINADO PERIODO",
+		    map(cohort.patientsWithViralLoadResultsDocumentedInPeriod(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES COM CARGA VIRAL INDETECTAVEL (CV<1000): NUM DETERMINADO PERIODO
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator patientsWithUndetectableViralLoadInPeriod() {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES COM CARGA VIRAL INDETECTAVEL (CV<1000): NUM DETERMINADO PERIODO",
+		    map(cohort.patientsWithUndetectableViralLoadInPeriod(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES ELEGIVEIS A CARGA VIRAL DE ROTINA: SITIOS TESTAR E INICIAR - SEM INCLUIR
+	 * ELEGIVEIS POR FALENCIA
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsIligebleToRotineViralLoadTestStartSitesExcludingTherapeuticFailure() {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES ELEGIVEIS A CARGA VIRAL DE ROTINA: SITIOS TESTAR E INICIAR - SEM INCLUIR ELEGIVEIS POR FALENCIA",
+		    map(cohort.CONSULTA_CRIANCAS_MAIS_2_ANOS_MAIS_6_MESES_TARV(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES ELEGIVEIS A CARGA VIRAL DE ROTINA: SITIOS NAO TESTAR E INICIAR - SEM
+	 * INCLUIR ELEGIVEIS POR FALENCIA
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsIligebleToRotineViralLoadNotTestStartSitesExcludingTherapeuticFailure() {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES ELEGIVEIS A CARGA VIRAL DE ROTINA: SITIOS NAO TESTAR E INICIAR - SEM INCLUIR ELEGIVEIS POR FALENCIA",
+		    map(cohort.patientsIligebleToRotineViralLoadTestNotStartSitesExcludingTherapeuticFailure(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE GRÁVIDAS ELEGIVEIS A CARGA VIRAL
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPregnantsIligebleToViralLoad() {
+		return cohortIndicator("NUMERO DE GRÁVIDAS ELEGIVEIS A CARGA VIRAL",
+		    map(cohort.pregnantsIligebleToViralLoad(), "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
+	
+	/**
+	 * NUMERO DE PACIENTES ELEGIVEIS A CARGA VIRAL POR SUSPEITA DE FALENCIA TERAPEUTICA - TARGETED
+	 * 
+	 * @return CohortIndicator
+	 */
+	public CohortIndicator numberOfPatientsIligebleToViralLoadForTherapeuticFailureSuspect() {
+		return cohortIndicator(
+		    "NUMERO DE PACIENTES ELEGIVEIS A CARGA VIRAL POR SUSPEITA DE FALENCIA TERAPEUTICA - TARGETED",
+		    map(cohort.patientsIligebleToViralLoadForTherapeuticFailureSuspect(),
+		        "startDate=${startDate},endDate=${endDate},location=${location}"));
+	}
 }

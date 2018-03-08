@@ -76,7 +76,7 @@ public class SaprAprCohort {
 		
 		cd.setName("PACIENTES COM DATA DE PARTO ACTUALIZADO NO SERVICO TARV");
 		cd.setDescription("Sao pacientes com data de parto actualizado no servico tarv. Repare que os parametros 'Data Inicial' e 'Data Final' refere-se a data de parto e nao data de registo (actualizacao)");
-		cd.setQuestion(Dictionary.getConcept(Dictionary.DATE_OF_BIRTH));
+		cd.setQuestion(Dictionary.getConcept(Dictionary.DATE_OF_DELIVERY));
 		cd.setEncounterTypeList(Arrays.asList(ADULTO_SEGUIMENTO, ADULTO_INICIAL_A));
 		cd.setTimeModifier(PatientSetService.TimeModifier.ANY);
 		cd.addParameter(new Parameter("location", "Location", Location.class));
@@ -89,18 +89,20 @@ public class SaprAprCohort {
 	}
 	
 	public CohortDefinition aRTStartForBeingBreastfeeding() {
-		CodedObsCohortDefinition cd = new CodedObsCohortDefinition();
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
 		
 		cd.setName("INICIO DE TARV POR SER LACTANTE");
 		cd.setDescription("São pacientes que iniciaram TARV por serem lactantes. Conceito 6334");
-		cd.setQuestion(Dictionary.getConcept(Dictionary.CRITERIA_FOR_ART_START));
-		cd.setEncounterTypeList(Arrays.asList(CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_SEGUIMENTO_6)));
-		cd.setTimeModifier(PatientSetService.TimeModifier.FIRST);
-		cd.setOperator(SetComparator.IN);
-		cd.setValueList(Arrays.asList(Dictionary.getConcept(Dictionary.BREASTFEEDING)));
 		cd.addParameter(new Parameter("location", "Unidade Sanitaria", Location.class));
 		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
 		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addSearch("hasEncounter", ReportUtils.map(
+		    cohortLibrary.hasEncounter(CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_SEGUIMENTO_6)),
+		    "onOrAfter=${startDate},onOrBefore=${endDate},location=${location}"));
+		cd.addSearch("hasObs", ReportUtils.map(cohortLibrary.hasObs(
+		    Dictionary.getConcept(Dictionary.CRITERIA_FOR_ART_START), PatientSetService.TimeModifier.FIRST,
+		    Dictionary.getConcept(Dictionary.BREASTFEEDING)), "onOrAfter=${startDate},onOrBefore=${endDate}"));
+		cd.setCompositionString("hasObs AND hasEncounter");
 		
 		return cd;
 	}
@@ -138,8 +140,8 @@ public class SaprAprCohort {
 		cd.addSearch("hasEncounter", ReportUtils.map(
 		    cohortLibrary.hasEncounter(CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_SEGUIMENTO_6)),
 		    "onOrAfter=${startDate},onOrBefore=${endDate},location=${location}"));
-		cd.addSearch("hasObs", ReportUtils.map(
-		    cohortLibrary.hasObs(Dictionary.getConcept(Dictionary.BREASTFEEDING), PatientSetService.TimeModifier.LAST),
+		cd.addSearch("hasObs", ReportUtils.map(cohortLibrary.hasObs(Dictionary.getConcept(Dictionary.BREASTFEEDING),
+		    PatientSetService.TimeModifier.LAST, Dictionary.getConcept(Dictionary.YES)),
 		    "onOrAfter=${startDate},onOrBefore=${endDate}"));
 		cd.setCompositionString("hasObs AND hasEncounter");
 		
@@ -649,13 +651,14 @@ public class SaprAprCohort {
 		return cd;
 	}
 	
-	public CohortDefinition patientsInARTForMoreThan6Months() {
+	public CohortDefinition patientsInARTForMoreThanXMonths() {
 		SqlCohortDefinition cd = new SqlCohortDefinition();
 		cd.setName("PACIENTES QUE ESTAO A MAIS DE 6 MESES EM TARV");
 		cd.setDescription("Sao pacientes que iniciaram tarv ha mais de 6 meses");
 		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
 		cd.addParameter(new Parameter("location", "Location", Location.class));
-		cd.setQuery(CohortQueries.PATIENTS_IN_ART_FOR_MORE_THAN_6_MONTHS);
+		cd.addParameter(new Parameter("months", "Months", Integer.class));
+		cd.setQuery(CohortQueries.PATIENTS_IN_ART_FOR_MORE_THAN_X_MONTHS);
 		
 		return cd;
 	}
@@ -670,7 +673,7 @@ public class SaprAprCohort {
 		cd.addSearch("TARV", ReportUtils.map(currentlyOnARTExcludingLostToFollowUp(),
 		    "startDate=${startDate},endDate=${endDate},location=${location}"));
 		cd.addSearch("HA6MESES",
-		    ReportUtils.map(patientsInARTForMoreThan6Months(), "endDate=${endDate},location=${location}"));
+		    ReportUtils.map(patientsInARTForMoreThanXMonths(), "endDate=${endDate},location=${location},months=6"));
 		cd.setCompositionString("TARV AND HA6MESES");
 		return cd;
 	}
@@ -818,8 +821,8 @@ public class SaprAprCohort {
 	
 	public CohortDefinition patientsInscribedOnTBProgram() {
 		SqlCohortDefinition cd = new SqlCohortDefinition();
-		cd.setName("PACIENTES COM CARGA VIRAL INDETECTAVEL NOS ULTIMOS 12 MESES");
-		cd.setDescription("Sao pacientes cujo o ultimo resultado de carga viral nos ultimos 12 meses foi menor que 1000");
+		cd.setName("PROGRAMA: PACIENTES INSCRITOS NO PROGRAMA DE TUBERCULOSE - NUM PERIODO");
+		cd.setDescription("São pacientes inscritos no programa de tuberculose num determinado periodo");
 		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
 		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
 		cd.addParameter(new Parameter("location", "Location", Location.class));
@@ -837,7 +840,7 @@ public class SaprAprCohort {
 		Concept start = Dictionary.getConcept(Dictionary.START);
 		Concept tbTreatment = Dictionary.getConcept(Dictionary.TB_TREATMENT);
 		
-		cd.setName(" PACIENTES QUE INICIARAM TRATAMENTO DA TUBERCULOSE NOTIFICADOS NO SERVICO TARV - FEV12");
+		cd.setName("PACIENTES QUE INICIARAM TRATAMENTO DA TUBERCULOSE NOTIFICADOS NO SERVICO TARV - FEV12");
 		cd.setDescription("Pacientes que iniciaram o tratamento da tuberculose, e que este inicio foi documentado na ficha de seguimento do paciente no serviço TARV.");
 		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
 		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
@@ -866,7 +869,7 @@ public class SaprAprCohort {
 		cd.addSearch("INICIOST", ReportUtils.map(patientsWhoStartedTBTreatmentNotifiedInARTService(),
 		    "startDate=${startDate},endDate=${endDate},location=${location}"));
 		
-		cd.setCompositionString("DATAINICIO OR TBPROGRAMA OR INICIOST)");
+		cd.setCompositionString("DATAINICIO OR TBPROGRAMA OR INICIOST");
 		return cd;
 	}
 	
@@ -882,7 +885,7 @@ public class SaprAprCohort {
 		cd.addSearch("INICIOTB", ReportUtils.map(patientsNotifiedTBTreatmentDifferentSources(),
 		    "startDate=${startDate},endDate=${endDate},location=${location}"));
 		
-		cd.setCompositionString("TBSIM OR INICIOTB)");
+		cd.setCompositionString("TBSIM OR INICIOTB");
 		return cd;
 	}
 	
@@ -898,7 +901,691 @@ public class SaprAprCohort {
 		cd.addSearch("INICIOTARV", ReportUtils.map(aRTStartInPeriodExcludingTransfersFrom(),
 		    "startDate=${startDate},endDate=${endDate},location=${location}"));
 		
-		cd.setCompositionString("TBNOTIFICADO AND INICIOTARV)");
+		cd.setCompositionString("TBNOTIFICADO AND INICIOTARV");
+		return cd;
+	}
+	
+	public CohortDefinition yearStartedART() {
+		SqlCohortDefinition cd = new SqlCohortDefinition();
+		cd.setName("IDADE NO INICIO DE TARV");
+		cd.setDescription("São adultos de 15+ anos, que iniciaram TARV e a idade é calculada na data de inicio de TARV");
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addParameter(new Parameter("minAge", "Minimum Age", Integer.class));
+		cd.addParameter(new Parameter("maxAge", "Maximum Age", Integer.class));
+		cd.addParameter(new Parameter("gender", "Gender", Character.class));
+		cd.setQuery(CohortQueries.YEAR_STARTED_ART);
+		
+		return cd;
+	}
+	
+	public CohortDefinition patientsActiveInARTNotifiedTBTreatmentOnARTService() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES NOTIFICADOS DO TRATAMENTO DE TB NO SERVICO TARV - ACTIVOS EM TARV");
+		cd.setDescription("Pacientes notificados do tratamento TB no serviço TARV em todas as fontes e que são activos em TARV no periodo de report");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("NOTIFICADOSTB", ReportUtils.map(patientsNotifiedTBTreatmentDifferentSources(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("ACTIVOSTARV", ReportUtils.map(currentlyOnARTExcludingLostToFollowUp(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("ACTIVOSTARV AND NOTIFICADOSTB");
+		return cd;
+	}
+	
+	public CohortDefinition patientsNotifiedTBTreatmentOnARTServiceWhoStartedART() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES NOTIFICADOS DO TRATAMENTO DE TB NO SERVICO TARV - NOVOS INICIOS");
+		cd.setDescription("Pacientes notificados do tratamento de TB no serviço tarv em todas as fontes");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("NOTIFICADOSTB", ReportUtils.map(patientsNotifiedTBTreatmentDifferentSources(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("NOVOSINICIOS", ReportUtils.map(aRTStartInPeriodExcludingTransfersFrom(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("NOTIFICADOSTB AND NOVOSINICIOS");
+		return cd;
+	}
+	
+	public CohortDefinition patientsWithPositiveTBTracking() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		
+		EncounterType adultoSeguimento = CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_SEGUIMENTO_6);
+		EncounterType pediatriaSeguimento = CoreUtils.getEncounterType(Metadata._EncounterType.PEDIATRIA_SEGUIMENTO_9);
+		Concept YES = Dictionary.getConcept(Dictionary.YES);
+		Concept screeningForTB = Dictionary.getConcept(Dictionary.SCREENING_FOR_TB);
+		
+		cd.setName("PACIENTES COM RASTREIO DE TUBERCULOSE POSITIVO");
+		cd.setDescription("São pacientes que tiveram rastreio de tuberculose positivo");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("hasEncounters", ReportUtils.map(cohortLibrary.hasEncounter(adultoSeguimento, pediatriaSeguimento),
+		    "onOrAfter=${startDate},onOrBefore=${endDate},location=${location}"));
+		cd.addSearch("hasObs", ReportUtils.map(
+		    cohortLibrary.hasObs(screeningForTB, PatientSetService.TimeModifier.LAST, YES),
+		    "onOrAfter=${startDate},onOrBefore=${endDate}"));
+		cd.setCompositionString("hasObs AND hasEncounters");
+		
+		return cd;
+	}
+	
+	public CohortDefinition patientsWithNegativeTBTracking() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		
+		EncounterType adultoSeguimento = CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_SEGUIMENTO_6);
+		EncounterType pediatriaSeguimento = CoreUtils.getEncounterType(Metadata._EncounterType.PEDIATRIA_SEGUIMENTO_9);
+		Concept NO = Dictionary.getConcept(Dictionary.NO);
+		Concept tbTracking = Dictionary.getConcept(Dictionary.SCREENING_FOR_TB);
+		
+		cd.setName("PACIENTES COM RASTREIO DE TUBERCULOSE NEGATIVO");
+		cd.setDescription("São pacientes que tiveram o ultimo rastreio de tuberculose negativo");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("hasEncounters", ReportUtils.map(cohortLibrary.hasEncounter(adultoSeguimento, pediatriaSeguimento),
+		    "onOrAfter=${startDate},onOrBefore=${endDate},location=${location}"));
+		cd.addSearch("hasObs", ReportUtils.map(cohortLibrary.hasObs(tbTracking, PatientSetService.TimeModifier.LAST, NO),
+		    "onOrAfter=${startDate},onOrBefore=${endDate}"));
+		cd.setCompositionString("hasObs AND hasEncounters");
+		
+		return cd;
+	}
+	
+	public CohortDefinition patientsActiveInARTWithPositiveTBTracking() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES ACTUALMENTE EM TARV COM RASTREIO DE TUBERCULOSE POSITIVO NUM DETERMINADO PERIODO");
+		cd.setDescription("Sao pacientes que estão actualmente em TARV (ACTIVOS) e que tiveram o ultimo rastreio de tuberculose positivo num determinado periodo");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("RASTREIOPOSITIVO", ReportUtils.map(patientsWithPositiveTBTracking(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("ACTUALTARV", ReportUtils.map(currentlyOnARTExcludingLostToFollowUp(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("ACTUALTARV AND RASTREIOPOSITIVO");
+		return cd;
+	}
+	
+	public CohortDefinition patientsActiveInARTWithNegativeTBTracking() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES ACTUALMENTE EM TARV COM RASTREIO DE TUBERCULOSE POSITIVO NUM DETERMINADO PERIODO");
+		cd.setDescription("Sao pacientes que estão actualmente em TARV (ACTIVOS) e que tiveram o ultimo rastreio de tuberculose negativo num determinado periodo");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("RASTREIONEGATIVO", ReportUtils.map(patientsWithNegativeTBTracking(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("ACTUALTARV", ReportUtils.map(currentlyOnARTExcludingLostToFollowUp(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("ACTUALTARV AND RASTREIONEGATIVO");
+		return cd;
+	}
+	
+	public CohortDefinition patientsWithPositiveTBTrackingWhoStartedART() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("INICIO DE TARV E COM RASTREIO TB POSITIVO - NUM PERIODO: EXCLUI TRANSFERIDOS DE COM DATA DE INICIO CONHECIDA");
+		cd.setDescription("Sao pacientes que iniciaram tratamento ARV num periodo excluindo os transferidos de com a data de inicio conhecida e mesmo que coincida no periodo e que tiveram rastreio de TB positivo");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("RASTREIOTBPOS", ReportUtils.map(patientsWithPositiveTBTracking(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("INICIOTARV", ReportUtils.map(aRTStartInPeriodExcludingTransfersFrom(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("RASTREIOTBPOS AND INICIOTARV");
+		return cd;
+	}
+	
+	public CohortDefinition patientsWithNegativeTBTrackingWhoStartedART() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("INICIO DE TARV E COM RASTREIO DE TB NEGATIVO - NUM PERIODO: EXCLUI TRANSFERIDOS DE COM DATA DE INICIO CONHECIDA");
+		cd.setDescription("Sao pacientes que iniciaram tratamento ARV num periodo excluindo os transferidos de com a data de inicio conhecida e mesmo que coincida no periodo e que tiveram rastreio de TB negativo");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("RASTREIOTBNEG", ReportUtils.map(patientsWithNegativeTBTracking(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("INICIOTARVTB", ReportUtils.map(aRTStartInPeriodExcludingTransfersFrom(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("INICIOTARVTB AND RASTREIOTBNEG");
+		return cd;
+	}
+	
+	public CohortDefinition patientsWHOHadPositiveTBDiagnoseTest() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		
+		EncounterType adultoSeguimento = CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_SEGUIMENTO_6);
+		EncounterType pediatriaSeguimento = CoreUtils.getEncounterType(Metadata._EncounterType.PEDIATRIA_SEGUIMENTO_9);
+		Concept POSITIVE = Dictionary.getConcept(Dictionary.POSITIVE);
+		Concept TB_INVESTIGATION_RESULT = Dictionary.getConcept(Dictionary.TB_INVESTIGATION_RESULT_BK_RX);
+		
+		cd.setName("PACIENTES QUE TIVERAM TESTE DE DIAGNOSTICO DE TUBERCULOSE POSITIVO: BK OU RX");
+		cd.setDescription("São pacientes que depois de um rastreio positivo, foram submetidos ao teste de confirmação de tuberculose por BK ou RX e que este teste foi positivo");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("hasEncounters", ReportUtils.map(cohortLibrary.hasEncounter(adultoSeguimento, pediatriaSeguimento),
+		    "onOrAfter=${startDate},onOrBefore=${endDate},location=${location}"));
+		cd.addSearch("hasObs", ReportUtils.map(
+		    cohortLibrary.hasObs(TB_INVESTIGATION_RESULT, PatientSetService.TimeModifier.LAST, POSITIVE),
+		    "onOrAfter=${startDate},onOrBefore=${endDate}"));
+		cd.setCompositionString("hasObs AND hasEncounters");
+		
+		return cd;
+	}
+	
+	public CohortDefinition patientsWHOHadNegativeTBDiagnoseTest() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		
+		EncounterType adultoSeguimento = CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_SEGUIMENTO_6);
+		EncounterType pediatriaSeguimento = CoreUtils.getEncounterType(Metadata._EncounterType.PEDIATRIA_SEGUIMENTO_9);
+		Concept NEGATIVE = Dictionary.getConcept(Dictionary.NEGATIVE);
+		Concept TB_INVESTIGATION_RESULT = Dictionary.getConcept(Dictionary.TB_INVESTIGATION_RESULT_BK_RX);
+		
+		cd.setName("PACIENTES QUE TIVERAM TESTE DE DIAGNOSTICO DE TUBERCULOSE NEGATIVO: BK OU RX");
+		cd.setDescription("São pacientes que teste de investigação de tuberculose negativo");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("hasEncounters", ReportUtils.map(cohortLibrary.hasEncounter(adultoSeguimento, pediatriaSeguimento),
+		    "onOrAfter=${startDate},onOrBefore=${endDate},location=${location}"));
+		cd.addSearch("hasObs", ReportUtils.map(
+		    cohortLibrary.hasObs(TB_INVESTIGATION_RESULT, PatientSetService.TimeModifier.LAST, NEGATIVE),
+		    "onOrAfter=${startDate},onOrBefore=${endDate}"));
+		cd.setCompositionString("hasObs AND hasEncounters");
+		
+		return cd;
+	}
+	
+	public CohortDefinition patientsEverInARTWithPositiveTBTrackingWhoHadPositiveDiagnoseTest() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES QUE ALGUMA VEZ ESTIVERAM EM TARV COM RASTREIO DE TB POSITIVO E TIVERAM TESTE DE DIAGNOSTICO DE TB POSITIVO: BK OU RX - PERIODO FINAL (COMPOSICAO)");
+		cd.setDescription("Pacientes que alguma vez estiveram em TARV com rastreio de TB positivo e tiveram teste de diagnostico de TB positivo: BK ou RX - Periodo Final");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("RASTREIOTBPOS", ReportUtils.map(patientsWithPositiveTBTracking(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("ESTEVETARV",
+		    ReportUtils.map(everBeenOnART(), "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("TESTETBPOS", ReportUtils.map(patientsWHOHadPositiveTBDiagnoseTest(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("ESTEVETARV AND RASTREIOTBPOS AND TESTETBPOS");
+		return cd;
+	}
+	
+	public CohortDefinition patientsEverInARTWithPositiveTBTrackingWhoHadNegativeDiagnoseTest() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES QUE ALGUMA VEZ ESTIVERAM EM TARV COM RASTREIO DE TB POSITIVO E TIVERAM TESTE DE DIAGNOSTICO DE TB NEGATIVO: BK OU RX PERIODO FINAL (COMPOSICAO)");
+		cd.setDescription("Pacientes que alguma vez estiveram em TARV com rastreio de TB positivo e tiveram teste de diagnostico de TB negativo: BK ou RX - Periodo Final");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("RASTREIOTBPOS", ReportUtils.map(patientsWithPositiveTBTracking(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("ESTEVETARV",
+		    ReportUtils.map(everBeenOnART(), "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("TESTETBNEG", ReportUtils.map(patientsWHOHadNegativeTBDiagnoseTest(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("ESTEVETARV AND RASTREIOTBPOS AND TESTETBNEG");
+		return cd;
+	}
+	
+	public CohortDefinition patientsWhoStartedProphilaxyWithIsoniazida() {
+		DateObsCohortDefinition cd = new DateObsCohortDefinition();
+		
+		EncounterType ADULTO_SEGUIMENTO = CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_SEGUIMENTO_6);
+		EncounterType PEDIATRIA_SEGUIMENTO = CoreUtils.getEncounterType(Metadata._EncounterType.PEDIATRIA_SEGUIMENTO_9);
+		
+		cd.setName("PACIENTES QUE INICIARAM PROFILAXIA COM ISONIAZIDA");
+		cd.setDescription("Pacientes que iniciaram profilaxia com Isoniazida num periodo. Repare que e diferente de pacientes que receberam profilaxia");
+		cd.setQuestion(Dictionary.getConcept(Dictionary.PROPHILAXY_WITH_ISONIAZIDA_START_DATE));
+		cd.setEncounterTypeList(Arrays.asList(ADULTO_SEGUIMENTO, PEDIATRIA_SEGUIMENTO));
+		cd.setTimeModifier(PatientSetService.TimeModifier.FIRST);
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.setOperator1(RangeComparator.GREATER_EQUAL);
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.setOperator2(RangeComparator.LESS_EQUAL);
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		
+		return cd;
+	}
+	
+	public CohortDefinition patientsWhoFinishedProphilaxyWithIsoniazida() {
+		DateObsCohortDefinition cd = new DateObsCohortDefinition();
+		
+		EncounterType ADULTO_SEGUIMENTO = CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_SEGUIMENTO_6);
+		EncounterType PEDIATRIA_SEGUIMENTO = CoreUtils.getEncounterType(Metadata._EncounterType.PEDIATRIA_SEGUIMENTO_9);
+		
+		cd.setName("PACIENTES QUE TERMINARAM A PROFILAXIA COM ISONIAZIDA NUM PERIODO");
+		cd.setDescription("Pacientes que terminaram a profilaxia com a isoniazida num determinado periodo");
+		cd.setQuestion(Dictionary.getConcept(Dictionary.PROPHILAXY_WITH_ISONIAZIDA_END_DATE));
+		cd.setEncounterTypeList(Arrays.asList(ADULTO_SEGUIMENTO, PEDIATRIA_SEGUIMENTO));
+		cd.setTimeModifier(PatientSetService.TimeModifier.LAST);
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.setOperator1(RangeComparator.GREATER_EQUAL);
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.setOperator2(RangeComparator.LESS_EQUAL);
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		
+		return cd;
+	}
+	
+	public CohortDefinition patientsWhoStartedAndFinishedProphilaxyWithIsoniazida() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES QUE INICIARAM E TERMINARAM PROFILAXIA COM ISONIAZIDA O TERMINO DEVE TER DATA FIM PREENCHIDA");
+		cd.setDescription("Pacientes que iniciaram e terminaram a profilaxia com isoniazida, o termino é marcado por preenchimento de data do fim");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("INICIOTPI", ReportUtils.map(patientsWhoStartedProphilaxyWithIsoniazida(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("ALGUMAVEZTARV",
+		    ReportUtils.map(everBeenOnART(), "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("TERMINAR", ReportUtils.map(patientsWhoFinishedProphilaxyWithIsoniazida(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("ALGUMAVEZTARV AND TERMINAR AND INICIOTPI");
+		return cd;
+	}
+	
+	public CohortDefinition patientsWhoStartedAndFinishedProphilaxyWithIsoniazidaPreviousPeriod() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES QUE INICIARAM E TERMINARAM PROFILAXIA COM ISONIAZIDA O TERMINO DEVE TER DATA FIM PREENCHIDA: INICIO TPI PERIODO ANTERIOR");
+		cd.setDescription("Pacientes que iniciaram e terminaram a profilaxia com isoniazida, o termino é marcado por preenchimento de data do fim. O inicio é num periodo de 6 meses anteriores ao periodo de reportagem");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("INICIOTPI", ReportUtils.map(patientsWhoStartedProphilaxyWithIsoniazida(),
+		    "startDate=${startDate-6m},endDate=${startDate-1d},location=${location}"));
+		cd.addSearch("ALGUMAVEZTARV",
+		    ReportUtils.map(everBeenOnART(), "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("TERMINAR", ReportUtils.map(patientsWhoFinishedProphilaxyWithIsoniazida(),
+		    "startDate=${startDate-6m},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("ALGUMAVEZTARV AND TERMINAR AND INICIOTPI");
+		return cd;
+	}
+	
+	public CohortDefinition patientsWhoStartedAndContinueProphilaxyWithIsoniazida() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES QUE INICIARAM E CONTINUAM EM PROFILAXIA COM ISONIZIDA: INICIOU E NÃO TEM DATA FIM");
+		cd.setDescription("São pacientes que iniciaram a profilaxia com isoniziada e que ainda não terminaram. Não terminar significa que não tem data de fim preenchida");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("INICIOTPI", ReportUtils.map(patientsWhoStartedProphilaxyWithIsoniazida(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("ALGUMAVEZTARV",
+		    ReportUtils.map(everBeenOnART(), "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("TERMINAR", ReportUtils.map(patientsWhoFinishedProphilaxyWithIsoniazida(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("(ALGUMAVEZTARV AND INICIOTPI) AND NOT TERMINAR");
+		return cd;
+	}
+	
+	public CohortDefinition patientsWhoStartedAndContinueProphilaxyWithIsoniazidaPreviousPeriod() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES QUE INICIARAM E CONTINUAM EM PROFILAXIA COM ISONIZIDA: INICIOU E NÃO TEM DATA FIM - INICIO TPI PERIODO ANTERIOR");
+		cd.setDescription("São pacientes que iniciaram a profilaxia com isoniziada e que ainda não terminaram. Não terminar significa que não tem data de fim preenchida. O inicio de TPI é no periodo de 6 meses anteriores ao periodo de reportagem");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("INICIOTPI", ReportUtils.map(patientsWhoStartedProphilaxyWithIsoniazida(),
+		    "startDate=${startDate-6m},endDate=${startDate-1d},location=${location}"));
+		cd.addSearch("ALGUMAVEZTARV",
+		    ReportUtils.map(everBeenOnART(), "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("TERMINAR", ReportUtils.map(patientsWhoFinishedProphilaxyWithIsoniazida(),
+		    "startDate=${startDate-6m},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("(ALGUMAVEZTARV AND INICIOTPI) AND NOT TERMINAR");
+		return cd;
+	}
+	
+	public CohortDefinition patientsEverStartedARTAndStartedProphilaxyWithIsoniazida() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES QUE ALGUMA VEZ INICIOU TARV E QUE INICIOU A PROFILAXIA COM TPI NUM DETERMINADO PERIODO");
+		cd.setDescription("Sao pacientes que alguma vez iniciou tarv e que iniciou o tratamento profilactico com isoniazida num determinado periodo");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("PROFILAXIATPI", ReportUtils.map(patientsWhoStartedProphilaxyWithIsoniazida(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("ALGUMAVEZTARV",
+		    ReportUtils.map(everBeenOnART(), "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("ALGUMAVEZTARV AND PROFILAXIATPI");
+		return cd;
+	}
+	
+	public CohortDefinition patientsWhoStartedARTXDaysAfterDeclaredIlegible() {
+		SqlCohortDefinition cd = new SqlCohortDefinition();
+		cd.setName("MQ_PACIENTES QUE INICIARAM TARV DENTRO DE X DIAS DEPOIS DE DECLARADAS ELEGIVEIS");
+		cd.setDescription("Sao pacientes que iniciaram tarv, com data de elegibilidade preenchida e que iniciaram TARV dentro de X dias depois de declaradas elegiveis");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addParameter(new Parameter("days", "Days", Integer.class));
+		cd.setQuery(CohortQueries.PATIENTS_WHO_STARTED_ART_X_DAYS_AFTER_DECLARED_ILEGIBLE);
+		
+		return cd;
+	}
+	
+	public CohortDefinition patientsWithViralLoadResultsDocumentedInPeriod() {
+		SqlCohortDefinition cd = new SqlCohortDefinition();
+		cd.setName("PACIENTES COM RESULTADO DE CARGA VIRAL DOCUMENTADA NUM DETERMINADO PERIODO");
+		cd.setDescription("São pacientes com resultado de carga viral documentada num determinado perido");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.setQuery(CohortQueries.PATIENTS_WITH_VIRAL_LOAD_RESULTS_DOCUMENTED_IN_PERIOD);
+		
+		return cd;
+	}
+	
+	public CohortDefinition patientsWithUndetectableViralLoadInPeriod() {
+		SqlCohortDefinition cd = new SqlCohortDefinition();
+		cd.setName("PACIENTES COM CARGA VIRAL INDETECTAVEL (CV<1000): NUM DETERMINADO PERIODO");
+		cd.setDescription("São pacientes cujo o ultimo resultado de carga viral num determinado período foi menor 1000");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.setQuery(CohortQueries.PATIENTS_WITH_UNDETECTABLE_VIRAL_LOAD_IN_PERIOD);
+		
+		return cd;
+	}
+	
+	public CohortDefinition patientsWithAtLeastOneClinicConsultation() {
+		SqlCohortDefinition cd = new SqlCohortDefinition();
+		cd.setName("PACIENTES COM PELO MENOS UMA CONSULTA CLINICA NUM DETERMINADO PERIODO");
+		cd.setDescription("São pacientes que têm pelo menos uma consulta clínica (seguimento) num determinado periodo");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.setQuery(CohortQueries.PATIENTS_WITH_AT_LEAST_ONE_CLINIC_CONSULTATION);
+		
+		return cd;
+	}
+	
+	public CohortDefinition patientsWithImmunologicFaults() {
+		SqlCohortDefinition cd = new SqlCohortDefinition();
+		cd.setName("FALHAS IMUNOLOGICAS - SQL");
+		cd.setDescription("Pacientes que tiveram falhas imunologicas, isto é, pacientes com baixo cd4 6 meses apos inicio de TARV");
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.setQuery(CohortQueries.PATIENTS_WITH_IMMUNOLOGIC_FAULTS);
+		
+		return cd;
+	}
+	
+	public CohortDefinition patientsWithViralLoadExamRegistered() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		
+		EncounterType adultoSeguimento = CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_SEGUIMENTO_6);
+		EncounterType pediatriaSeguimento = CoreUtils.getEncounterType(Metadata._EncounterType.PEDIATRIA_SEGUIMENTO_9);
+		EncounterType misauLaboratorio = CoreUtils.getEncounterType(Metadata._EncounterType.MISAU_LABORATORIO);
+		
+		Concept HIV_VIRAL_LOAD = Dictionary.getConcept(Dictionary.HIV_VIRAL_LOAD);
+		
+		cd.setName("PACIENTES COM EXAME DE CARGA VIRAL REGISTADO: PERIODO FINAL");
+		cd.setDescription("Pacientes com exame de carga viral registado até um determinado perido final");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("hasEncounters", ReportUtils.map(
+		    cohortLibrary.hasEncounter(adultoSeguimento, pediatriaSeguimento, misauLaboratorio),
+		    "onOrAfter=${startDate},onOrBefore=${endDate},location=${location}"));
+		cd.addSearch("hasObs", ReportUtils.map(
+		    cohortLibrary.hasNumericObs(HIV_VIRAL_LOAD, PatientSetService.TimeModifier.ANY), "onOrBefore=${endDate}"));
+		cd.setCompositionString("hasObs AND hasEncounters");
+		
+		return cd;
+	}
+	
+	public CohortDefinition patientsWithUndetectableViralLoadFinalPeriod() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		
+		EncounterType adultoSeguimento = CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_SEGUIMENTO_6);
+		EncounterType pediatriaSeguimento = CoreUtils.getEncounterType(Metadata._EncounterType.PEDIATRIA_SEGUIMENTO_9);
+		EncounterType misauLaboratorio = CoreUtils.getEncounterType(Metadata._EncounterType.MISAU_LABORATORIO);
+		
+		Concept HIV_VIRAL_LOAD = Dictionary.getConcept(Dictionary.HIV_VIRAL_LOAD);
+		
+		cd.setName("PACIENTES COM CARGA VIRAL INDETECTAVEL (CV<1000): PERIODO FINAL");
+		cd.setDescription("São pacientes cuja a ultima carga viral registada foi menor que 1000");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("hasEncounters", ReportUtils.map(
+		    cohortLibrary.hasEncounter(adultoSeguimento, pediatriaSeguimento, misauLaboratorio),
+		    "onOrAfter=${startDate},onOrBefore=${endDate},location=${location}"));
+		cd.addSearch("hasObs", ReportUtils.map(
+		    cohortLibrary.hasNumericObs(HIV_VIRAL_LOAD, PatientSetService.TimeModifier.LAST, 1000.0),
+		    "onOrBefore=${endDate}"));
+		cd.setCompositionString("hasObs AND hasEncounters");
+		
+		return cd;
+	}
+	
+	public CohortDefinition patientsWithDetectableViralLoadFinalPeriod() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		
+		EncounterType adultoSeguimento = CoreUtils.getEncounterType(Metadata._EncounterType.ADULTO_SEGUIMENTO_6);
+		EncounterType pediatriaSeguimento = CoreUtils.getEncounterType(Metadata._EncounterType.PEDIATRIA_SEGUIMENTO_9);
+		EncounterType misauLaboratorio = CoreUtils.getEncounterType(Metadata._EncounterType.MISAU_LABORATORIO);
+		
+		Concept HIV_VIRAL_LOAD = Dictionary.getConcept(Dictionary.HIV_VIRAL_LOAD);
+		
+		cd.setName("PACIENTES COM CARGA VIRAL DETECTAVEL (>=1000): PERIODO FINAL");
+		cd.setDescription("São pacientes com a ultima carga viral registado foi maior que 1000 (Detectavel)");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("hasEncounters", ReportUtils.map(
+		    cohortLibrary.hasEncounter(adultoSeguimento, pediatriaSeguimento, misauLaboratorio),
+		    "onOrAfter=${startDate},onOrBefore=${endDate},location=${location}"));
+		cd.addSearch("hasObs", ReportUtils.map(
+		    cohortLibrary.hasNumericObs(HIV_VIRAL_LOAD, PatientSetService.TimeModifier.LAST, 1000.0, 1000000.0),
+		    "onOrAfter=${startDate},onOrBefore=${endDate}"));
+		cd.setCompositionString("hasObs AND hasEncounters");
+		
+		return cd;
+	}
+	
+	public CohortDefinition patientsEverInARTWithNoViralLoadExam() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES QUE ALGUMA VEZ ESTEVE EM TRATAMENTO ARV SEM EXAME DE CARGA VIRAL");
+		cd.setDescription("São pacientes que alguma vez esteve em tratamento ARV sem exame de carga viral registado");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("CARGAVIRAL", ReportUtils.map(patientsWithViralLoadExamRegistered(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("ALGUMAVEZTARV",
+		    ReportUtils.map(everBeenOnART(), "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("ALGUMAVEZTARV AND NOT CARGAVIRAL");
+		return cd;
+	}
+	
+	public CohortDefinition CONSULTA_CRIANCAS_2_A_5_ANOS_MAIS_6_MESES_TARV() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("CONSULTA + CRIANCAS 2 A 5 ANOS + MAIS_6_MESES_TARV");
+		cd.setDescription("Composição CONSULTA + CRIANCAS 2 A 5 ANOS + MAIS 6 MESES TARV");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("CONSULTA", ReportUtils.map(patientsWithAtLeastOneClinicConsultation(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("CRIANCA2A5ANOS",
+		    ReportUtils.map(cohortLibrary.agedAtLeastAgedAtMost(2, 5), "effectiveDate=${endDate}"));
+		cd.addSearch("MAIS6MESESTARV",
+		    ReportUtils.map(patientsInARTForMoreThanXMonths(), "endDate=${endDate},location=${location},months=6"));
+		
+		cd.setCompositionString("CONSULTA AND CRIANCA2A5ANOS AND MAIS6MESESTARV");
+		return cd;
+	}
+	
+	public CohortDefinition TARVSEMCARGAVIRAL_CARGAVIRALINDETECTAVEL() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("TARVSEMCARGAVIRAL OR CARGAVIRALINDETECTAVEL");
+		cd.setDescription("Composition TARVSEMCARGAVIRAL + CARGAVIRALINDETECTAVEL");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("TARVSEMCARGAVIRAL", ReportUtils.map(patientsEverInARTWithNoViralLoadExam(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("CARGAVIRALINDETECTAVEL", ReportUtils.map(patientsWithUndetectableViralLoadFinalPeriod(),
+		    "startDate=${startDate},endDate=${endDate-12m},location=${location}"));
+		
+		cd.setCompositionString("TARVSEMCARGAVIRAL OR CARGAVIRALINDETECTAVEL");
+		return cd;
+	}
+	
+	public CohortDefinition patientsIlegibleToViralLoadTestStartSites() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES ELEGIVEIS A CARGA VIRAL DE ROTINA: SITIOS TESTAR E INICIAR");
+		cd.setDescription("Pacientes com elegiveis a carga viral de rotina. Criterios de elegibilidade 1) Pacientes com idade maior e igual a 2 anos 2) Nao gravidas 3) ter consulta clinica no periodo 4) Em tarv a mais de 6 meses 5) Sem carga viral ou com carga viral há mais de 12 meses e que esta carga viral foi menor que 1000");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("CONSULTA", ReportUtils.map(CONSULTA_CRIANCAS_MAIS_2_ANOS_MAIS_6_MESES_TARV(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("GRAVIDAS", ReportUtils.map(pregnantsInscribedOnARTService(),
+		    "startDate=${endDate-10m},endDate=${endDate},location=${location}"));
+		cd.addSearch("CARGAVIRALINDETECTAVEL", ReportUtils.map(TARVSEMCARGAVIRAL_CARGAVIRALINDETECTAVEL(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("(CONSULTA AND NOT GRAVIDAS) AND CARGAVIRALINDETECTAVEL");
+		return cd;
+	}
+	
+	public CohortDefinition patientsIlegibleToViralLoadNotTestStartSites() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES ELEGIVEIS A CARGA VIRAL DE ROTINA: SITIOS NAO TESTAR E INICIAR");
+		cd.setDescription("Pacientes com elegiveis a carga viral de rotina. Criterios de elegibilidade 1) Pacientes com entre 2-5 anos 2) Nao gravidas 3) ter consulta clinica no periodo 4) Em tarv a mais de 6 meses 5) Sem carga viral ou com carga viral há mais de 12 meses e que esta carga viral foi menor que 1000");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("CONSULTA", ReportUtils.map(CONSULTA_CRIANCAS_2_A_5_ANOS_MAIS_6_MESES_TARV(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("TARVSEMCARGAVIRAL", ReportUtils.map(TARVSEMCARGAVIRAL_CARGAVIRALINDETECTAVEL(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("CONSULTA AND TARVSEMCARGAVIRAL");
+		return cd;
+	}
+	
+	public CohortDefinition CONSULTA_CRIANCAS_MAIS_2_ANOS_MAIS_6_MESES_TARV() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("CONSULTA + CRIANCAS MAIS DE 2 ANOS + MAIS 6 MESES TARV");
+		cd.setDescription("Composição CONSULTA + CRIANCAS MAIS DE 2 ANOS + MAIS 6 MESES TARV");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("CONSULTA", ReportUtils.map(patientsWithAtLeastOneClinicConsultation(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("IDADE2ANOS", ReportUtils.map(cohortLibrary.agedAtLeast(2), "effectiveDate=${endDate}"));
+		cd.addSearch("MAIS6MESESTARV",
+		    ReportUtils.map(patientsInARTForMoreThanXMonths(), "endDate=${endDate},location=${location},months=6"));
+		
+		cd.setCompositionString("CONSULTA AND MAIS6MESESTARV AND IDADE2ANOS");
+		return cd;
+	}
+	
+	public CohortDefinition CVDETECTAVEL_FALHAIMUNOLOGICA_SEMCARGAVIRAL() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("CVDETECTAVEL OU (FALHAIMUNOLOGICA + SEMCARGAVIRAL)");
+		cd.setDescription("Composição CVDETECTAVEL OU (FALHAIMUNOLOGICA + SEMCARGAVIRAL)");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("CVDETECTAVEL", ReportUtils.map(patientsWithDetectableViralLoadFinalPeriod(),
+		    "startDate=${startDate},endDate=${endDate-6m},location=${location}"));
+		cd.addSearch("FALHAIMUNOLOGICA",
+		    ReportUtils.map(patientsWithImmunologicFaults(), "endDate=${endDate},location=${location}"));
+		cd.addSearch("SEMCARGAVIRAL", ReportUtils.map(patientsEverInARTWithNoViralLoadExam(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("CVDETECTAVEL OR (FALHAIMUNOLOGICA AND SEMCARGAVIRAL)");
+		return cd;
+	}
+	
+	public CohortDefinition patientsIligebleToViralLoadForTherapeuticFailureSuspect() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES ELEGIVEIS A CARGA VIRAL POR SUSPEITA DE FALENCIA TERAPEUTICA - TARGETED");
+		cd.setDescription("Pacientes elegiveis a carga viral por suspeita de falencia terapeutica. 1) Paciente com idade maior ou igual a 2 anos 2) Consulta clinica no periodo 3) Em TARV há mais de 6 meses 4) Ultima carga viral medida há 6 meses com valor superior a 1000 ou suspeita de falencia imunologica sem carga viral");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("CONSULTA", ReportUtils.map(CONSULTA_CRIANCAS_MAIS_2_ANOS_MAIS_6_MESES_TARV(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("CVDETECTAVEL", ReportUtils.map(CVDETECTAVEL_FALHAIMUNOLOGICA_SEMCARGAVIRAL(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("CONSULTA AND NOT CVDETECTAVEL");
+		return cd;
+	}
+	
+	public CohortDefinition patientsIligebleToRotineViralLoadTestStartSitesExcludingTherapeuticFailure() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES ELEGIVEIS A CARGA VIRAL DE ROTINA: SITIOS TESTAR E INICIAR - SEM INCLUIR ELEGIVEIS POR FALENCIA");
+		cd.setDescription("Pacientes com elegiveis a carga viral de rotina. Criterios de elegibilidade 1) Pacientes com idade maior e igual a 2 anos 2) Nao gravidas 3) ter consulta clinica no periodo 4) Em tarv a mais de 6 meses 5) Sem carga viral ou com carga viral há mais de 12 meses e que esta carga viral foi menor que 1000. Retiramos aqueles que coincide a elegibilidade por Rotina e Targeted");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("ROTINATESTARINICIAR", ReportUtils.map(patientsIlegibleToViralLoadTestStartSites(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("FALHAIMUNOLOGICA", ReportUtils.map(patientsIligebleToViralLoadForTherapeuticFailureSuspect(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("ROTINATESTARINICIAR AND NOT FALHAIMUNOLOGICA");
+		return cd;
+	}
+	
+	public CohortDefinition patientsIligebleToRotineViralLoadTestNotStartSitesExcludingTherapeuticFailure() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("PACIENTES ELEGIVEIS A CARGA VIRAL DE ROTINA: SITIOS NAO TESTAR E INICIAR - SEM INCLUIR ELEGIVEIS POR FALENCIA");
+		cd.setDescription("Pacientes com elegiveis a carga viral de rotina. Criterios de elegibilidade 1) Pacientes com entre 2-5 anos 2) Nao gravidas 3) ter consulta clinica no periodo 4) Em tarv a mais de 6 meses 5) Sem carga viral ou com carga viral há mais de 12 meses e que esta carga viral foi menor que 1000 ");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("ROTINAELEGIVEL", ReportUtils.map(patientsIlegibleToViralLoadNotTestStartSites(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		cd.addSearch("TARGETED", ReportUtils.map(patientsIligebleToViralLoadForTherapeuticFailureSuspect(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("ROTINAELEGIVEL NOT TARGETED");
+		return cd;
+	}
+	
+	public CohortDefinition pregnantsIligebleToViralLoad() {
+		CompositionCohortDefinition cd = new CompositionCohortDefinition();
+		cd.setName("GRÁVIDAS ELEGIVEIS A CARGA VIRAL");
+		cd.setDescription("São gravidas inscritas e que estão há mais de 3 meses em TARV");
+		cd.addParameter(new Parameter("startDate", "Data Inicial", Date.class));
+		cd.addParameter(new Parameter("endDate", "Data Final", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.addSearch("GRAVIDAS", ReportUtils.map(pregnantsInscribedOnARTService(),
+		    "startDate=${startDate-6m},endDate=${endDate},location=${location}"));
+		cd.addSearch("MAIS3MESESTARV",
+		    ReportUtils.map(patientsInARTForMoreThanXMonths(), "endDate=${endDate},location=${location},months=3"));
+		cd.addSearch("CONSULTA", ReportUtils.map(patientsWithAtLeastOneClinicConsultation(),
+		    "startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		cd.setCompositionString("GRAVIDAS AND MAIS3MESESTARV AND CONSULTA");
 		return cd;
 	}
 }

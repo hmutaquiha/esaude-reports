@@ -61,6 +61,7 @@ public class CommonDimension {
 		dim.addCohortDefinition("2-4", map(commonLibrary.agedAtLeastAgedAtMost(2, 3), "effectiveDate=${onDate}"));
 		dim.addCohortDefinition("2-5", map(commonLibrary.agedAtLeastAgedAtMost(2, 5), "effectiveDate=${onDate}"));
 		dim.addCohortDefinition("5-14", map(commonLibrary.agedAtLeastAgedAtMost(5, 14), "effectiveDate=${onDate}"));
+		dim.addCohortDefinition("6-14", map(commonLibrary.agedAtLeastAgedAtMost(6, 14), "effectiveDate=${onDate}"));
 		dim.addCohortDefinition("15+", map(commonLibrary.agedAtLeast(15), "effectiveDate=${onDate}"));
 		dim.addCohortDefinition("5-9", map(commonLibrary.agedAtLeastAgedAtMost(5, 9), "effectiveDate=${onDate}"));
 		dim.addCohortDefinition("10-14", map(commonLibrary.agedAtLeastAgedAtMost(10, 14), "effectiveDate=${onDate}"));

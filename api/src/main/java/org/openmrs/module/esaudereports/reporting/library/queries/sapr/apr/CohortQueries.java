@@ -57,36 +57,36 @@ public class CohortQueries {
 	 */
 	public static final String PREGNANTS_INSCRIBED_ON_ART_SERVICE = "Select 	p.patient_id"
 	        + " from 	patient p"
-	        + " 		inner join encounter e on p.patient_id=e.patient_id"
-	        + " 		inner join obs o on e.encounter_id=o.encounter_id"
+	        + " inner join encounter e on p.patient_id=e.patient_id"
+	        + " inner join obs o on e.encounter_id=o.encounter_id"
 	        + " where 	p.voided=0 and e.voided=0 and o.voided=0 and concept_id=1982 and value_coded=44 and"
-	        + " 		e.encounter_type in (5,6) and e.encounter_datetime between :startDate and :endDate and e.location_id=:location"
+	        + " e.encounter_type in (5,6) and e.encounter_datetime between :startDate and :endDate and e.location_id=:location"
 	        + " union"
 	        + " Select 	p.patient_id"
 	        + " from 	patient p inner join encounter e on p.patient_id=e.patient_id"
-	        + " 		inner join obs o on e.encounter_id=o.encounter_id"
+	        + " inner join obs o on e.encounter_id=o.encounter_id"
 	        + " where 	p.voided=0 and e.voided=0 and o.voided=0 and concept_id=1279 and"
-	        + " 		e.encounter_type in (5,6) and e.encounter_datetime between :startDate and :endDate and e.location_id=:location"
+	        + " e.encounter_type in (5,6) and e.encounter_datetime between :startDate and :endDate and e.location_id=:location"
 	        + " union"
 	        + " Select 	p.patient_id"
 	        + " from 	patient p inner join encounter e on p.patient_id=e.patient_id"
-	        + " 		inner join obs o on e.encounter_id=o.encounter_id"
+	        + " inner join obs o on e.encounter_id=o.encounter_id"
 	        + " where 	p.voided=0 and e.voided=0 and o.voided=0 and concept_id=1600 and"
-	        + " 		e.encounter_type in (5,6) and e.encounter_datetime between :startDate and :endDate and e.location_id=:location"
+	        + " e.encounter_type in (5,6) and e.encounter_datetime between :startDate and :endDate and e.location_id=:location"
 	        + " union" + " select 	pp.patient_id" + " from 	patient_program pp"
 	        + " where 	pp.program_id=8 and pp.voided=0 and"
-	        + " 		pp.date_enrolled between :startDate and :endDate and pp.location_id=:location";
+	        + " pp.date_enrolled between :startDate and :endDate and pp.location_id=:location";
 	
 	/**
 	 * PROGRAMA: PACIENTES QUE DERAM PARTO HÁ DOIS ANOS ATRÁS DA DATA DE REFERENCIA - LACTANTES
 	 */
 	public static final String PATIENTS_WHO_GAVE_BIRTH_TWO_YEARS_AGO = "select 	pg.patient_id"
 	        + " from 	patient p"
-	        + " 		inner join patient_program pg on p.patient_id=pg.patient_id"
-	        + " 		inner join patient_state ps on pg.patient_program_id=ps.patient_program_id"
+	        + " inner join patient_program pg on p.patient_id=pg.patient_id"
+	        + " inner join patient_state ps on pg.patient_program_id=ps.patient_program_id"
 	        + " where 	pg.voided=0 and ps.voided=0 and p.voided=0 and"
-	        + " 		pg.program_id=8 and ps.state=27 and ps.end_date is null and"
-	        + " 		ps.start_date between date_add(:startDate, interval -2 year) and date_add(:startDate, interval -1 day) and location_id=:location";
+	        + " pg.program_id=8 and ps.state=27 and ps.end_date is null and"
+	        + " ps.start_date between date_add(:startDate, interval -2 year) and date_add(:startDate, interval -1 day) and location_id=:location";
 	
 	/**
 	 * PROGRAMA: PACIENTES INSCRITOS NO PROGRAMA TRATAMENTO ARV (TARV) - PERIODO FINAL
@@ -295,6 +295,46 @@ public class CohortQueries {
 	        + " 	where (datediff(data_inicio,birthdate)/365)>=15";
 	
 	/**
+	 * IDADE NO INICIO DE TARV
+	 */
+	public static final String YEAR_STARTED_ART = "select patient_id"
+	        + " 	from"
+	        + " 	(select patient_id,min(data_inicio) data_inicio"
+	        + " 		from"
+	        + " 		("
+	        + " 			Select 	p.patient_id,min(e.encounter_datetime) data_inicio"
+	        + " 			from 	patient p"
+	        + " 			inner join encounter e on p.patient_id=e.patient_id"
+	        + "			inner join obs o on o.encounter_id=e.encounter_id"
+	        + " 			where 	e.voided=0 and o.voided=0 and p.voided=0 and"
+	        + " 			e.encounter_type in (18,6,9) and o.concept_id=1255 and o.value_coded=1256 and"
+	        + " 			e.encounter_datetime<=:endDate and e.location_id=:location"
+	        + " 			group by p.patient_id"
+	        + " 			union"
+	        + " 			Select p.patient_id,min(value_datetime) data_inicio"
+	        + " 			from 	patient p"
+	        + " 			inner join encounter e on p.patient_id=e.patient_id"
+	        + " 			inner join obs o on e.encounter_id=o.encounter_id"
+	        + " 			where 	p.voided=0 and e.voided=0 and o.voided=0 and e.encounter_type in (18,6,9) and"
+	        + " 			o.concept_id=1190 and o.value_datetime is not null and"
+	        + " 			o.value_datetime<=:endDate and e.location_id=:location"
+	        + " 			group by p.patient_id"
+	        + " 			union"
+	        + " 			select 	pg.patient_id,date_enrolled as data_inicio"
+	        + " 			from 	patient p inner join patient_program pg on p.patient_id=pg.patient_id"
+	        + " 			where 	pg.voided=0 and p.voided=0 and program_id=2 and"
+	        + " 			pg.date_enrolled<=:endDate and pg.location_id=:location"
+	        + " union"
+	        + " select p.patient_id,min(encounter_datetime)"
+	        + " from patient p inner join encounter e on p.patient_id=e.patient_id"
+	        + " where p.voided=0 and e.voided=0 and e.encounter_type=18 and e.encounter_datetime<=:endDate and e.location_id=:location"
+	        + " group by p.patient_id"
+	        + " 		) inicio"
+	        + " 	group by patient_id"
+	        + " 	)inicio_real inner join person pe on inicio_real.patient_id=pe.person_id"
+	        + " 	where timestampdiff(year,birthdate,data_inicio)>=:minAge and timestampdiff(year,birthdate,data_inicio)<:maxAge and gender=:gender";
+	
+	/**
 	 * PROGRAMA: PACIENTES QUE SAIRAM DO PROGRAMA DE TRATAMENTO ARV - SUSPENSO, ABANDONO, OBITO,
 	 * TRANSFERIDO PARA: PERIODO FINAL
 	 */
@@ -478,7 +518,7 @@ public class CohortQueries {
 	/**
 	 * PACIENTES QUE ESTAO A MAIS DE 6 MESES EM TARV
 	 */
-	public static final String PATIENTS_IN_ART_FOR_MORE_THAN_6_MONTHS = "select patient_id"
+	public static final String PATIENTS_IN_ART_FOR_MORE_THAN_X_MONTHS = "select patient_id"
 	        + " from"
 	        + " (	select patient_id,min(data_inicio) data_inicio"
 	        + " 		from"
@@ -510,7 +550,7 @@ public class CohortQueries {
 	        + " 			from 	patient p inner join encounter e on p.patient_id=e.patient_id"
 	        + " 			where 	p.voided=0 and e.voided=0 and e.encounter_type=18 and e.encounter_datetime<=:endDate and e.location_id=:location"
 	        + " 			group by p.patient_id" + " 		) inicio" + " 	group by patient_id" + " )inicio_real"
-	        + " where timestampdiff (MONTH,data_inicio,:endDate)>=6";
+	        + " where timestampdiff (MONTH,data_inicio,:endDate)>=:months";
 	
 	/**
 	 * PACIENTES COM RESULTADO DE CARGA VIRAL NOS ULTIMOS 12 MESES
@@ -561,5 +601,171 @@ public class CohortQueries {
 	public static final String PATIENTS_INSCRIBED_ON_TB_PROGRAM = "select 	pg.patient_id"
 	        + " from 	patient p inner join patient_program pg on p.patient_id=pg.patient_id"
 	        + " where 	pg.voided=0 and p.voided=0 and program_id=5 "
-	        + "and date_enrolled between :startDate and :endDate and location_id=:location";;
+	        + "and date_enrolled between :startDate and :endDate and location_id=:location";
+	
+	/**
+	 * MQ_PACIENTES QUE INICIARAM TARV DENTRO DE X DIAS DEPOIS DE DECLARADAS ELEGIVEIS
+	 */
+	public static final String PATIENTS_WHO_STARTED_ART_X_DAYS_AFTER_DECLARED_ILEGIBLE = "select inicio_real.patient_id"
+	        + " from"
+	        + " 	(	select patient_id,data_inicio"
+	        + " 		from"
+	        + " 			(	Select patient_id,min(data_inicio) data_inicio"
+	        + " 				from"
+	        + " 					(	Select 	p.patient_id,min(e.encounter_datetime) data_inicio"
+	        + " 						from 	patient p"
+	        + " 						inner join encounter e on p.patient_id=e.patient_id"
+	        + " 						inner join obs o on o.encounter_id=e.encounter_id"
+	        + " 						where 	e.voided=0 and o.voided=0 and p.voided=0 and"
+	        + " 						e.encounter_type in (18,6,9) and o.concept_id=1255 and o.value_coded=1256 and"
+	        + " 						e.encounter_datetime<=:endDate and e.location_id=:location"
+	        + " 						group by p.patient_id"
+	        + " 						union"
+	        + " 						Select 	p.patient_id,min(value_datetime) data_inicio"
+	        + " 						from 	patient p"
+	        + " 						inner join encounter e on p.patient_id=e.patient_id"
+	        + " 						inner join obs o on e.encounter_id=o.encounter_id"
+	        + " 						where 	p.voided=0 and e.voided=0 and o.voided=0 and e.encounter_type in (18,6,9) and"
+	        + " 						o.concept_id=1190 and o.value_datetime is not null and"
+	        + " 						o.value_datetime<=:endDate and e.location_id=:location"
+	        + " 						group by p.patient_id"
+	        + " 						union"
+	        + " 						select 	pg.patient_id,date_enrolled data_inicio"
+	        + " 						from 	patient p inner join patient_program pg on p.patient_id=pg.patient_id"
+	        + " 						where 	pg.voided=0 and p.voided=0 and program_id=2 and date_enrolled<=:endDate and location_id=:location"
+	        + " 						union"
+	        + " 					  	SELECT 	e.patient_id, MIN(e.encounter_datetime) AS data_inicio"
+	        + " 					  	FROM 	patient p"
+	        + " 						inner join encounter e on p.patient_id=e.patient_id"
+	        + " 					  	WHERE	p.voided=0 and e.encounter_type=18 AND e.voided=0 and e.encounter_datetime<=:endDate and e.location_id=:location"
+	        + " 					  	GROUP BY p.patient_id" + " 					) inicio" + " 				group by patient_id" + " 			)inicio1"
+	        + " 		where data_inicio between :startDate and :endDate" + " 	)inicio_real" + " 	inner join"
+	        + " 	(	select p.patient_id,min(value_datetime) data_elegibilidade" + " 		from	patient p"
+	        + " 		inner join encounter e on p.patient_id=e.patient_id"
+	        + " 		inner join obs o on o.encounter_id=e.encounter_id"
+	        + " 		where 	e.voided=0 and p.voided=0 and o.value_datetime <= date_add(:endDate, interval 30 day) and"
+	        + " 		o.voided=0 and o.concept_id=6278 and e.encounter_type in (6,9) and e.location_id=:location"
+	        + " 		group by p.patient_id" + " 	) elegibilidade on inicio_real.patient_id=elegibilidade.patient_id"
+	        + " where 	datediff(data_inicio,data_elegibilidade)<=:days and" + " 		inicio_real.patient_id not in" + " 		("
+	        + " 			select 	pg.patient_id" + " 			from 	patient p"
+	        + " 			inner join patient_program pg on p.patient_id=pg.patient_id"
+	        + " 			inner join patient_state ps on pg.patient_program_id=ps.patient_program_id"
+	        + " 			where 	pg.voided=0 and ps.voided=0 and p.voided=0 and"
+	        + " 			pg.program_id=2 and ps.state=29 and ps.start_date=pg.date_enrolled and"
+	        + " 			ps.start_date between :startDate and :endDate and location_id=:location" + " 		)";
+	
+	/**
+	 * PACIENTES COM RESULTADO DE CARGA VIRAL DOCUMENTADA NUM DETERMINADO PERIODO
+	 */
+	public static final String PATIENTS_WITH_VIRAL_LOAD_RESULTS_DOCUMENTED_IN_PERIOD = "Select 	p.patient_id"
+	        + " from 	patient p" + " inner join encounter e on p.patient_id=e.patient_id"
+	        + " inner join obs o on e.encounter_id=o.encounter_id"
+	        + " where 	p.voided=0 and e.voided=0 and o.voided=0 and e.encounter_type in (13,6,9) and"
+	        + " o.concept_id=856 and o.value_numeric is not null and"
+	        + " e.encounter_datetime between :startDate and :endDate and e.location_id=:location";
+	
+	/**
+	 * PACIENTES COM CARGA VIRAL INDETECTAVEL (CV<1000): NUM DETERMINADO PERIODO
+	 */
+	public static final String PATIENTS_WITH_UNDETECTABLE_VIRAL_LOAD_IN_PERIOD = "Select ultima_carga.patient_id" + " from"
+	        + " (Select 	p.patient_id,max(o.obs_datetime) data_carga" + " from 	patient p"
+	        + " inner join encounter e on p.patient_id=e.patient_id" + " inner join obs o on e.encounter_id=o.encounter_id"
+	        + " where 	p.voided=0 and e.voided=0 and o.voided=0 and e.encounter_type in (13,6,9) and"
+	        + " o.concept_id=856 and o.value_numeric is not null and"
+	        + " e.encounter_datetime between :startDate and :endDate and e.location_id=:location" + " group by p.patient_id"
+	        + " ) ultima_carga"
+	        + " inner join obs on obs.person_id=ultima_carga.patient_id and obs.obs_datetime=ultima_carga.data_carga"
+	        + " where 	obs.voided=0 and obs.concept_id=856 and obs.location_id=:location and obs.value_numeric<1000";
+	
+	/**
+	 * PACIENTES COM PELO MENOS UMA CONSULTA CLINICA NUM DETERMINADO PERIODO
+	 */
+	public static final String PATIENTS_WITH_AT_LEAST_ONE_CLINIC_CONSULTATION = "Select 	e.patient_id" + " from 	patient p"
+	        + " 		inner join encounter e on e.patient_id=p.patient_id"
+	        + " where 	p.voided=0 and e.voided=0 and e.encounter_type in (6,9) and"
+	        + " e.encounter_datetime between :startDate and :endDate and e.location_id=:location";
+	
+	/**
+	 * FALHAS IMUNOLOGICAS - SQL
+	 */
+	public static final String PATIENTS_WITH_IMMUNOLOGIC_FAULTS = "Select CD41.patient_id"
+	        + " from"
+	        + " 	(Select CD4_ANTES.patient_id,CD4_ANTES.data_inicio,CD4_ANTES.data_cd4_antes,obs.value_numeric as valor_cd4_antes"
+	        + " 	from"
+	        + " 	(select patient_id,max(data_inicio) data_inicio,max(obs_datetime) as data_cd4_antes"
+	        + " 	from"
+	        + " 		(	Select 	p.patient_id,min(encounter_datetime)  data_inicio"
+	        + " 			from 	patient p"
+	        + " 			inner join encounter e on p.patient_id=e.patient_id"
+	        + " 			inner join obs o on e.encounter_id=o.encounter_id"
+	        + " 			where 	o.concept_id=1255 and o.value_coded=1256 and"
+	        + " 			e.voided=0 and o.voided=0 and p.voided=0 and"
+	        + " 			e.encounter_type in (18,6,9) and e.encounter_datetime<=:endDate and e.location_id=:location"
+	        + " 			group by p.patient_id"
+	        + " 			union"
+	        + " 			Select p.patient_id,min(value_datetime) data_inicio"
+	        + " 			from 	patient p"
+	        + " 			inner join encounter e on p.patient_id=e.patient_id"
+	        + " 			inner join obs o on e.encounter_id=o.encounter_id"
+	        + " 			where 	p.voided=0 and e.voided=0 and o.voided=0 and e.encounter_type in (18,6,9) and"
+	        + " 			o.concept_id=1190 and o.value_datetime is not null and"
+	        + " 			o.value_datetime<=:endDate and e.location_id=:location"
+	        + " 			group by p.patient_id"
+	        + " 			union"
+	        + " 			select 	pg.patient_id,date_enrolled data_inicio"
+	        + " 			from 	patient p inner join patient_program pg on p.patient_id=pg.patient_id"
+	        + " 			where 	pg.voided=0 and p.voided=0 and program_id=2 and date_enrolled<=:endDate and location_id=:location"
+	        + " 		) inicio,"
+	        + " 		(	Select 	o.person_id,o.obs_datetime,o.value_numeric"
+	        + " 			from 	obs o"
+	        + " 			where 	o.concept_id=5497 and o.voided=0 and o.obs_datetime<=:endDate and o.location_id=:location"
+	        + " 		) cd4"
+	        + " 	where 	cd4.person_id=inicio.patient_id and cd4.obs_datetime<inicio.data_inicio"
+	        + " 	group by patient_id) CD4_ANTES,"
+	        + " 	obs"
+	        + " 	where obs.person_id=CD4_ANTES.patient_id and obs.concept_id=5497 and obs.obs_datetime=CD4_ANTES.data_cd4_antes and obs.voided=0 and obs.location_id=:location"
+	        + " 	) CD41,"
+	        + " 	(Select CD4_DEPOIS.patient_id,CD4_DEPOIS.data_inicio,CD4_DEPOIS.data_cd4_depois,obs.value_numeric as valor_cd4_depois,CD4_DEPOIS.cd4_pico"
+	        + " 	from"
+	        + " 	(select patient_id,max(data_inicio) as data_inicio,max(obs_datetime) data_cd4_depois,max(value_numeric) cd4_pico"
+	        + " 	from"
+	        + " 		(	Select 	p.patient_id,min(encounter_datetime)  data_inicio"
+	        + " 			from 	patient p"
+	        + " 			inner join encounter e on p.patient_id=e.patient_id"
+	        + " 			inner join obs o on e.encounter_id=o.encounter_id"
+	        + " 			where 	o.concept_id=1255 and o.value_coded=1256 and"
+	        + " 			e.voided=0 and o.voided=0 and p.voided=0 and"
+	        + " 			e.encounter_type=18 and e.encounter_datetime<=:endDate and e.location_id=:location"
+	        + " 			group by p.patient_id"
+	        + " 			union"
+	        + " 			Select p.patient_id,min(value_datetime) data_inicio"
+	        + " 			from 	patient p"
+	        + " 			inner join encounter e on p.patient_id=e.patient_id"
+	        + " 			inner join obs o on e.encounter_id=o.encounter_id"
+	        + " 			where 	p.voided=0 and e.voided=0 and o.voided=0 and e.encounter_type in (18,6,9) and"
+	        + " 			o.concept_id=1190 and o.value_datetime is not null and"
+	        + " 			o.value_datetime<=:endDate and e.location_id=:location"
+	        + " 			group by p.patient_id"
+	        + " 			union"
+	        + " 			select 	pg.patient_id,date_enrolled data_inicio"
+	        + " 			from 	patient p inner join patient_program pg on p.patient_id=pg.patient_id"
+	        + " 			where 	pg.voided=0 and p.voided=0 and program_id=2 and date_enrolled<=:endDate and location_id=:location"
+	        + " 		) inicio,"
+	        + " 		(	Select 	o.person_id,o.obs_datetime,o.value_numeric"
+	        + " 			from 	obs o"
+	        + " 			where 	o.concept_id=5497 and o.voided=0 and o.obs_datetime<=:endDate and o.location_id=:location"
+	        + " 		) cd4"
+	        + " 		where cd4.person_id=inicio.patient_id and cd4.obs_datetime>date_add(inicio.data_inicio,interval 6 month)"
+	        + " 		group by patient_id"
+	        + " 		) CD4_DEPOIS,"
+	        + " 		obs"
+	        + " 		where obs.person_id=CD4_DEPOIS.patient_id and obs.concept_id=5497 and obs.obs_datetime=CD4_DEPOIS.data_cd4_depois and obs.voided=0 and obs.location_id=:location"
+	        + " 		) CD42,"
+	        + " 		person"
+	        + " 		where CD41.patient_id=CD42.patient_id and person.person_id=CD41.patient_id and"
+	        + " 		("
+	        + " 			(round(datediff(:endDate,birthdate)/365)<=4 and valor_cd4_antes<200 and valor_cd4_depois<200) or"
+	        + " 			(round(datediff(:endDate,birthdate)/365) between 5 and 14 and ((valor_cd4_antes<100 and valor_cd4_depois<100) or (valor_cd4_depois<valor_cd4_antes))) or"
+	        + " 			(round(datediff(:endDate,birthdate)/365)>=15 and ((valor_cd4_antes<100 and valor_cd4_depois<100) or (valor_cd4_depois<valor_cd4_antes) or (valor_cd4_depois<(cd4_pico/2))))"
+	        + " 		)";
 }
